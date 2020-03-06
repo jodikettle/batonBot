@@ -1,0 +1,63 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.5",
+  "version": "1.0.0",
+  "id": "b27e797f-b8b2-49a6-8225-fef35573e3d0",
+  "packageName": "batonbot",
+  "developer": {
+    "name": "Jodi writes code",
+    "websiteUrl": "http://www.jodiwritescode.com",
+    "privacyUrl": "http://www.jodiwritescode.com/privacy",
+    "termsOfUseUrl": "http://www.jodiwritescode.com/terms"
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "maraschinoBaton",
+    "full": "Where is the Baton?"
+  },
+  "description": {
+    "short": "keeps track of the baton",
+    "full": "Who has the baton an easier way to keep track"
+  },
+  "accentColor": "#FFFFFF",
+  "bots": [
+    {
+      "botId": "b39e1320-9d9d-417f-b1e8-b7284079cbef",
+      "scopes": [
+        "personal"
+      ],
+      "commandLists": [
+        {
+          "scopes": [
+            "personal"
+          ],
+          "commands": [
+            {
+              "title": "take",
+              "description": "Take a baton"
+            },
+            {
+              "title": "release",
+              "description": "Release the baton"
+            },
+            {
+              "title": "show baton",
+              "description": "Shows whose got the baton"
+            }
+          ]
+        }
+      ],
+      "supportsFiles": false,
+      "isNotificationOnly": false
+    }
+
+  ],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": []
+}
