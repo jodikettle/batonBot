@@ -5,10 +5,6 @@ VisualStudioVersion = 15.0.28307.902
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BatonBot", "BatonBot\BatonBot.csproj", "{10DECA41-E57E-4727-8660-59BC620DFC1E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BatonLambda", "BatonLambda\BatonLambda.csproj", "{27400540-4984-47F5-AAA7-71BC1FFFBACE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BatonServer", "BatonServer\BatonServer.csproj", "{BC59F12E-0E5F-432E-8575-94E735F04BBD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,14 +15,6 @@ Global
 		{10DECA41-E57E-4727-8660-59BC620DFC1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10DECA41-E57E-4727-8660-59BC620DFC1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10DECA41-E57E-4727-8660-59BC620DFC1E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{27400540-4984-47F5-AAA7-71BC1FFFBACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{27400540-4984-47F5-AAA7-71BC1FFFBACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{27400540-4984-47F5-AAA7-71BC1FFFBACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{27400540-4984-47F5-AAA7-71BC1FFFBACE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BC59F12E-0E5F-432E-8575-94E735F04BBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC59F12E-0E5F-432E-8575-94E735F04BBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC59F12E-0E5F-432E-8575-94E735F04BBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC59F12E-0E5F-432E-8575-94E735F04BBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

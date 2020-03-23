@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using BatonBot.Models;
+using Firebase.Database;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -8,27 +11,20 @@ namespace BatonBot.Cards
 {
     public class Card
     {
-        public static Attachment CreateAttachment(List<BatonModel> batons)
+        public static Attachment CreateBatonsAttachment(IList<FirebaseObject<BatonQueue>> batons)
         {
             // combine path for cross platform support
-            string[] paths = { ".", "Resources", "table.json" };
+            string[] paths = { ".", "Resources", "batonQueue.json" };
             var adaptiveCardJson = File.ReadAllText(Path.Combine(paths));
 
-            var feBatonHolder = batons.FirstOrDefault(x => x.BatonName == "fe")?.Holder;
-            var beBatonHolder = batons.FirstOrDefault(x => x.BatonName == "be")?.Holder;
-            var manBatonHolder = batons.FirstOrDefault(x => x.BatonName == "man")?.Holder;
+            var manifestBaton = batons?.FirstOrDefault(x => x.Object.Name == "man");
+            var frontEndBaton = batons?.FirstOrDefault(x => x.Object.Name == "fe");
+            var backendBaton = batons?.FirstOrDefault(x => x.Object.Name == "be");
 
-            var feBatonTakenDate = batons.FirstOrDefault(x => x.BatonName == "fe")?.TakenDate;
-            var beBatonTakenDate = batons.FirstOrDefault(x => x.BatonName == "be")?.TakenDate;
-            var manBatonTakenDate = batons.FirstOrDefault(x => x.BatonName == "man")?.TakenDate;
 
-            adaptiveCardJson = adaptiveCardJson.Replace("{frontend.name}", feBatonHolder ?? "");
-            adaptiveCardJson = adaptiveCardJson.Replace("{backend.name}", beBatonHolder ?? "");
-            adaptiveCardJson = adaptiveCardJson.Replace("{manifest.name}", manBatonHolder ?? "");
-
-            adaptiveCardJson = adaptiveCardJson.Replace("{frontend.takenDate}", feBatonTakenDate.ToString() ?? "");
-            adaptiveCardJson = adaptiveCardJson.Replace("{backend.takenDate}", beBatonTakenDate.ToString() ?? "");
-            adaptiveCardJson = adaptiveCardJson.Replace("{manifest.takenDate}", manBatonTakenDate.ToString() ?? "");
+            adaptiveCardJson = adaptiveCardJson.Replace("\"{manifestQueue}\"", FormatQueue(manifestBaton?.Object));
+            adaptiveCardJson = adaptiveCardJson.Replace("\"{backendQueue}\"", FormatQueue(backendBaton?.Object));
+            adaptiveCardJson = adaptiveCardJson.Replace("\"{frontQueue}\"", FormatQueue(frontEndBaton?.Object));
 
             var adaptiveCardAttachment = new Attachment()
             {
@@ -38,20 +34,27 @@ namespace BatonBot.Cards
             return adaptiveCardAttachment;
         }
 
-        public static Attachment CreateBatonAttachment(string baton)
+        private static string FormatQueue(BatonQueue queue)
         {
-            // combine path for cross platform support
-            string[] paths = { ".", "Resources", "baton.json" };
-            var adaptiveCardJson = File.ReadAllText(Path.Combine(paths));
+            if (queue == null)
+                return $"[]";
 
-            adaptiveCardJson = adaptiveCardJson.Replace("{batonType}", baton);
+            var sb = new StringBuilder();
+            sb.Append("[");
 
-            var adaptiveCardAttachment = new Attachment()
+
+            var queueArray = queue.Queue.ToArray();
+
+            for (var i = 0; i < queue.Queue.Count; i++)
             {
-                ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = JsonConvert.DeserializeObject(adaptiveCardJson),
-            };
-            return adaptiveCardAttachment;
+                var personInQueue = queueArray[i];
+                var comma = i != 0 ? "," : "";
+                sb.AppendLine($"{comma}{{\"type\" : \"RichTextBlock\", \"horizontalAlignment\": \"Center\", \"separator\": true, \"inlines\" : [{{ \"type\" : \"TextRun\", \"text\" : \"{personInQueue.UserName} Since:{personInQueue.DateRequested}\"}}]}}");
+            }
+
+            sb.Append("]");
+
+            return sb.ToString();
         }
     }
 }
