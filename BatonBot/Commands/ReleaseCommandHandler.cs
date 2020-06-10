@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BatonBot.Firebase;
 using BatonBot.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
@@ -11,12 +12,12 @@ namespace BatonBot.Commands
 {
     public class ReleaseCommandHandler
     {
-        private readonly Firebase service;
+        private readonly IFirebaseClient service;
         private readonly string appId;
 
-        public ReleaseCommandHandler(string appId)
+        public ReleaseCommandHandler(IFirebaseClient firebaseClient, string appId)
         {
-            service = new Firebase();
+            this.service = firebaseClient;
             this.appId = appId;
         }
 
@@ -26,33 +27,56 @@ namespace BatonBot.Commands
             var batons = service.GetQueue().GetAwaiter().GetResult();
             var batonFireObject = batons?.FirstOrDefault(x => x.Object.Name.Equals(type));
 
-            if (batonFireObject != null)
+            if (batonFireObject == null) return;
+
+            var queue = batonFireObject.Object.Queue;
+
+            var name = turnContext.Activity.From.Name.Replace(" | Redington", "");
+
+            if (queue.Count <= 0) return;
+
+            // Does the first one belong to that person
+            if (queue.First().UserName.Equals(name))
             {
-                var queue = batonFireObject.Object.Queue;
+                queue.Dequeue();
 
                 if (queue.Count > 0)
                 {
-                    // Does the first one belong to that person
-                    if (queue.First().UserName == turnContext.Activity.From.Name)
-                    {
-                        queue.Dequeue();
-                        service.UpdateQueue(batonFireObject);
-
-                        if (queue.Count > 0)
-                        {
-                            //Tell the other person
-                            await this.Notify(queue.FirstOrDefault(), turnContext);
-                        }
-                    }
-                    else
-                    {
-                       await this.SendNotYourBaton(turnContext, cancellationToken);
-                    }
+                    //Tell the other person
+                    await this.Notify(queue.FirstOrDefault(), turnContext);
+                    queue.FirstOrDefault().DateReceived = DateTime.Now;
                 }
-            }
 
-            var activity = MessageFactory.Text($"Baton {type} released. Don't forget to update the board!");
-            await turnContext.SendActivityAsync(activity, cancellationToken);
+                service.UpdateQueue(batonFireObject);
+
+                var activity = MessageFactory.Text($"Baton {type} released. Now its time to move your ticket into closed on the zenhub board");
+                await turnContext.SendActivityAsync(activity, cancellationToken);
+            }
+            else
+            {
+                var queueLength = queue.Count;
+                batonFireObject.Object.Queue = this.removeAnyInQueue(queue, name, turnContext, cancellationToken);
+
+                if (batonFireObject.Object.Queue.Count() < queueLength)
+                {
+                    service.UpdateQueue(batonFireObject);
+
+                    var activity = MessageFactory.Text($"I have removed you from the queue");
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+                }
+                else
+                {
+                    await this.SendNotYourBaton(turnContext, cancellationToken);
+                }
+                return;
+            }
+        }
+
+        private Queue<BatonRequest> removeAnyInQueue(Queue<BatonRequest> batonQueue, string username, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            var name = username.Replace(" | Redington", "");
+
+            return new Queue<BatonRequest>(batonQueue.Where(x => !x.UserName.Equals(name)));
         }
 
         private async Task Notify(BatonRequest batonRequest, ITurnContext<IMessageActivity> turnContext)
@@ -77,7 +101,7 @@ namespace BatonBot.Commands
 
         private async Task SendNotYourBaton(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text($"You don't even have the baton");
+            var reply = MessageFactory.Text($"I couldn't find you in the list");
             await turnContext.SendActivityAsync(reply, cancellationToken);
         }
     }

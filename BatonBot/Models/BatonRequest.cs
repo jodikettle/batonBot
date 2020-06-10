@@ -8,6 +8,7 @@ namespace BatonBot.Models
         public string UserName;
         public string UserId;
         public DateTime DateRequested;
+        public DateTime? DateReceived;
         public ConversationReference Conversation;
     }
 }

@@ -1,25 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BatonBot.Firebase;
 using BatonBot.Models;
 using BatonBot.Services;
-using Firebase.Database;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
 namespace BatonBot.Commands
 {
-    public class TakeCommandHandler
+    public class TakeCommandHandler : ITakeCommandHandler
     {
-        private readonly Firebase service;
+        private readonly IFirebaseClient service;
         private readonly GetAndDisplayBatonService showBatonService;
 
-        public TakeCommandHandler()
+        public TakeCommandHandler(IFirebaseClient firebaseService)
         {
-            this.service = new Firebase();
-            this.showBatonService = new GetAndDisplayBatonService();
+            this.service = firebaseService;
+            this.showBatonService = new GetAndDisplayBatonService(firebaseService);
         }
 
         public async void Handler(string type, ITurnContext<IMessageActivity> turnContext,
@@ -30,15 +29,18 @@ namespace BatonBot.Commands
 
             var conversationReference = turnContext.Activity.GetConversationReference();
 
+            var name = turnContext.Activity.From.Name.Replace(" | Redington", "");
+
             if (batonFireObject == null)
             {
                 var baton = new BatonQueue(type);
 
                 baton.Queue.Enqueue(new BatonRequest()
                 {
-                    UserName = turnContext.Activity.From.Name,
+                    UserName = name,
                     UserId = conversationReference.User.Id,
-                    DateRequested = DateTime.Now,
+                    DateRequested = DateTime.Now.ToLocalTime(),
+                    DateReceived = DateTime.Now.ToLocalTime(),
                     Conversation = conversationReference
                 });
 
@@ -50,17 +52,22 @@ namespace BatonBot.Commands
             {
                  if (batonFireObject.Object.Queue.Count == 0)
                  {
-                     await this.SendItsAllYours(turnContext, cancellationToken);
+                     batonFireObject.Object.Queue.Enqueue(new BatonRequest()
+                         { UserName = name, UserId = conversationReference.User.Id, DateRequested = DateTime.Now, DateReceived = DateTime.Now, Conversation = conversationReference });
+
+                    await this.SendItsAllYours(turnContext, cancellationToken);
                  }
                  else
                  {
-                     await this.SendAddedToTheQueue(turnContext, cancellationToken);
+                     batonFireObject.Object.Queue.Enqueue(new BatonRequest()
+                         { UserName = name, UserId = conversationReference.User.Id, DateRequested = DateTime.Now, Conversation = conversationReference });
+
+                    await this.SendAddedToTheQueue(turnContext, cancellationToken);
                  }
 
-                 batonFireObject.Object.Queue.Enqueue(new BatonRequest()
-                     {UserName = turnContext.Activity.From.Name, UserId = conversationReference.User.Id, DateRequested = DateTime.Now, Conversation = conversationReference });
-                 service.UpdateQueue(batonFireObject);
+                 await service.UpdateQueue(batonFireObject);
 
+                 //TODO - just use the queue you have
                  await showBatonService.SendBatons(turnContext, cancellationToken);
             }
         }

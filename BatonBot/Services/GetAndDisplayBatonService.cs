@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BatonBot.Firebase;
 using BatonBot.Models;
 using Firebase.Database;
 using Microsoft.Bot.Builder;
@@ -9,16 +10,16 @@ namespace BatonBot.Services
 {
     public class GetAndDisplayBatonService
     {
-        private readonly Firebase service;
+        private readonly IFirebaseClient firebaseClient;
 
-        public GetAndDisplayBatonService()
+        public GetAndDisplayBatonService(IFirebaseClient firebaseClient)
         {
-            service = new Firebase();
+            this.firebaseClient = firebaseClient;
         }
 
         public async Task SendBatons(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            var batons = service.GetQueue().GetAwaiter().GetResult();
+            var batons = this.firebaseClient.GetQueue().GetAwaiter().GetResult();
             await SendBatonInfoAsync(turnContext, cancellationToken, batons);
         }
 

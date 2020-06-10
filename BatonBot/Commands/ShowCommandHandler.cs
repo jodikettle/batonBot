@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using BatonBot.Firebase;
 using BatonBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
@@ -9,9 +10,9 @@ namespace BatonBot.Commands
     {
         private readonly GetAndDisplayBatonService service;
 
-        public ShowCommandHandler()
+        public ShowCommandHandler(IFirebaseClient client)
         {
-            this.service = new GetAndDisplayBatonService();
+            this.service = new GetAndDisplayBatonService(client);
         }
 
         public async void Handler(ITurnContext<IMessageActivity> turnContext,

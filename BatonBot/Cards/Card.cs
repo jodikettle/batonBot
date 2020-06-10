@@ -48,8 +48,12 @@ namespace BatonBot.Cards
             for (var i = 0; i < queue.Queue.Count; i++)
             {
                 var personInQueue = queueArray[i];
-                var comma = i != 0 ? "," : "";
-                sb.AppendLine($"{comma}{{\"type\" : \"RichTextBlock\", \"horizontalAlignment\": \"Center\", \"separator\": true, \"inlines\" : [{{ \"type\" : \"TextRun\", \"text\" : \"{personInQueue.UserName} Since:{personInQueue.DateRequested}\"}}]}}");
+                if (personInQueue != null)
+                {
+                    var comma = i != 0 ? "," : "";
+                    sb.AppendLine(
+                        $"{comma}{{\"type\" : \"RichTextBlock\", \"horizontalAlignment\": \"Center\", \"separator\": true, \"inlines\" : [{{ \"type\" : \"TextRun\", \"text\" : \"{personInQueue.UserName} Since:{personInQueue.DateRequested}\"}}]}}");
+                }
             }
 
             sb.Append("]");
