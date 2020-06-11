@@ -33,7 +33,7 @@ namespace BatonBot.Commands
 
             var name = turnContext.Activity.From.Name.Replace(" | Redington", "");
 
-            if (queue.Count <= 0) TEST return;
+            if (queue.Count <= 0) return;
 
             // Does the first one belong to that person
             if (queue.First().UserName.Equals(name))
