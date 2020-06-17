@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>BatonBot</id>
+    <version>0.0.1</version>
+    <title>BatonBot</title>
+    <authors>Redington Ltd</authors>
+    <owners>Redington Ltd</owners>
+    <licenseUrl>http://www.redington.co.uk</licenseUrl>
+    <projectUrl>http://www.redington.co.uk</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Baton Bot</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Redington 2020</copyright>
+  </metadata>
+  <files>
+      <file src="BatonBot\bin\Release\netcoreapp2.1\BatonBot.dll" target="functions" />      
+	  <file src="BatonBot\bin\Release\netcoreapp2.1\appSettings.json" target="functions" />
+  </files>
+</package>
