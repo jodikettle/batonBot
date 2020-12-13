@@ -1,23 +1,26 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SharedBaton.Firebase;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using SharedBaton.Card;
 using SharedBaton.Commands;
-using SharedBaton.Firebase;
+using DevEnvironmentBot.Batons;
+using SharedBaton.Card;
 
-namespace BatonBot.Commands
+namespace DevEnvironmentBot.Commands
 {
     public class CommandHandler: ICommandHandler
     {
-        private readonly string[] _batonType = { "be", "fe", "man" };
-        private IFirebaseService client;
         private ICardCreator cardCreator;
+        private IFirebaseService client;
+        private BatonService batons;
 
         public CommandHandler(IFirebaseService client, ICardCreator cardCreator)
         {
             this.client = client;
+            this.batons = new BatonService();
             this.cardCreator = cardCreator;
         }
 
@@ -32,7 +35,7 @@ namespace BatonBot.Commands
             {
                 var command = text.Substring(0, text.IndexOf(' '));
                 var type = text.Replace(command + " ", "");
-                var batonType = checkBatonType(type);
+                var batonType = batons.checkBatonType(type);
                 if (!await CheckBatonIsAThing(batonType, turnContext, cancellationToken))
                 {
                     return;
@@ -40,11 +43,11 @@ namespace BatonBot.Commands
 
                 if (command.Equals("release"))
                 {
-                    new ReleaseCommandHandler(client, appId).Handler(batonType, turnContext, cancellationToken);
+                    new ReleaseCommandHandler(client, appId).Handler(batonType.Shortname, turnContext, cancellationToken);
                 }
                 else if (command.Equals("take"))
                 {
-                    new TakeCommandHandler(client, cardCreator).Handler(batonType, turnContext, cancellationToken);
+                    new TakeCommandHandler(client, cardCreator).Handler(batonType.Shortname, turnContext, cancellationToken);
                 }
                 else
                 {
@@ -54,26 +57,14 @@ namespace BatonBot.Commands
             }
         }
 
-        private async Task<bool> CheckBatonIsAThing(string type, ITurnContext<IMessageActivity> turnContext,
+        private async Task<bool> CheckBatonIsAThing(Baton type, ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
-            if (_batonType.Contains(type)) return true;
-            var activity = MessageFactory.Text($"Baton {type} is not a thing. But these are {string.Join(',', _batonType)}");
+            if (type != null) return true;
+            var activity = MessageFactory.Text($"Baton {type} is not a thing. But these are {this.batons.List()}");
             await turnContext.SendActivityAsync(activity, cancellationToken);
-            return false;
-        }
 
-        private string checkBatonType(string type)
-        {
-            if (type.ToLower().Equals("manifest"))
-            {
-                return "man";
-            }
-            if (type.ToLower().Equals("backend"))
-            {
-                return "be";
-            }
-            return type.ToLower().Equals("frontend") ? "fe" : type;
+            return false;
         }
     }
 }

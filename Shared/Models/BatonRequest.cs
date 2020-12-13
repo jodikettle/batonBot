@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Bot.Schema;
 
-namespace BatonBot.Models
+namespace SharedBaton.Models
 {
     public class BatonRequest
     {

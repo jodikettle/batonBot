@@ -1,21 +1,22 @@
-﻿using System.Threading;
+﻿
+using System.Threading;
 using System.Threading.Tasks;
-using BatonBot.Commands;
+using DevEnvironmentBot.Commands;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using SharedBaton.Commands;
 
-namespace BatonBot.Bots
+namespace DevEnvironmentBot.Bots
 {
-    public class BatonBot : ActivityHandler
+    public class DevBot : ActivityHandler
     {
         private string _appId;
         private string _appPassword;
         private ICommandHandler commandHandler;
 
-        public BatonBot(IConfiguration config, ICommandHandler commandHandler)
+        public DevBot(IConfiguration config, ICommandHandler commandHandler)
         {
             this._appId = config["MicrosoftAppId"];
             this._appPassword = config["MicrosoftAppPassword"];

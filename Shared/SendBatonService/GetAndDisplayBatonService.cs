@@ -1,20 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using BatonBot.Firebase;
-using BatonBot.Models;
 using Firebase.Database;
 using Microsoft.Bot.Builder;
+using SharedBaton.Firebase;
+using SharedBaton.Models;
+using SharedBaton.Card;
 
-namespace BatonBot.Services
+namespace SharedBaton.Services
 {
     public class GetAndDisplayBatonService
     {
-        private readonly IFirebaseClient firebaseClient;
+        private readonly IFirebaseService firebaseClient;
+        private readonly ICardCreator cardCreator;
 
-        public GetAndDisplayBatonService(IFirebaseClient firebaseClient)
+        public GetAndDisplayBatonService(IFirebaseService firebaseClient, ICardCreator cardCreator)
         {
             this.firebaseClient = firebaseClient;
+            this.cardCreator = cardCreator;
         }
 
         public async Task SendBatons(ITurnContext turnContext, CancellationToken cancellationToken)
@@ -23,11 +26,11 @@ namespace BatonBot.Services
             await SendBatonInfoAsync(turnContext, cancellationToken, batons);
         }
 
-        private static async Task SendBatonInfoAsync(ITurnContext turnContext,
+        private async Task SendBatonInfoAsync(ITurnContext turnContext,
             CancellationToken cancellationToken,
             IList<FirebaseObject<BatonQueue>> batons)
         {
-            var card = Cards.Card.CreateBatonsAttachment(batons);
+            var card = this.cardCreator.CreateBatonsAttachment(batons);
 
             var reply = MessageFactory.Attachment(card);
             await turnContext.SendActivityAsync(reply, cancellationToken);

@@ -1,11 +1,11 @@
 ﻿using System.Threading;
-using SharedBaton.Firebase;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using SharedBaton.Services;
 using SharedBaton.Card;
+using SharedBaton.Firebase;
+using SharedBaton.Services;
 
-namespace BatonBot.Commands
+namespace DevEnvironmentBot.Commands
 {
     public class ShowCommandHandler
     {

@@ -1,12 +1,11 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using BatonBot.Models;
 using Firebase.Database;
+using SharedBaton.Models;
 
-namespace BatonBot.Firebase
+namespace SharedBaton.Firebase
 {
-    public interface IFirebaseClient
+    public interface IFirebaseService
     {
         Task UpdateQueue(FirebaseObject<BatonQueue> queue);
         void SaveQueue(BatonQueue queue);

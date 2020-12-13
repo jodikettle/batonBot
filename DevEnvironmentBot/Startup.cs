@@ -1,26 +1,26 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 //
-// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.6.2
+// Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.11.1
 
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-using BatonBot.Commands;
-using Microsoft.Bot.Schema;
+using DevEnvironmentBot.Bots;
+using DevEnvironmentBot.Commands;
 using SharedBaton.Firebase;
 using SharedBaton.Commands;
-using BatonBot.Cards;
 using SharedBaton.Card;
+using DevEnvironmentBot.Cards;
+using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 
-namespace BatonBot
+namespace DevEnvironmentBot
 {
     public class Startup
     {
@@ -34,7 +34,7 @@ namespace BatonBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllers().AddNewtonsoftJson();
 
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
@@ -43,32 +43,33 @@ namespace BatonBot
             services.AddSingleton<ConcurrentDictionary<string, ConversationReference>>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, Bots.BatonBot>();
+            services.AddTransient<IBot, DevBot>();
 
-            services.AddSingleton<IFirebaseService, FirebaseService>();
             services.AddSingleton<ICardCreator, Card>();
+            services.AddSingleton<IFirebaseService, FirebaseService>();
             services.AddTransient<ITakeCommandHandler, TakeCommandHandler>();
             services.AddTransient<ICommandHandler, CommandHandler>();
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-            app.UseWebSockets();
-            //app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseDefaultFiles()
+                .UseStaticFiles()
+                .UseWebSockets()
+                .UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
+
+            // app.UseHttpsRedirection();
         }
     }
 }

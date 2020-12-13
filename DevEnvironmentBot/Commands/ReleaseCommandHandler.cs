@@ -5,10 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using SharedBaton.Models;
 using SharedBaton.Firebase;
+using SharedBaton.Models;
 
-namespace BatonBot.Commands
+namespace DevEnvironmentBot.Commands
 {
     public class ReleaseCommandHandler
     {
@@ -31,7 +31,7 @@ namespace BatonBot.Commands
 
             var queue = batonFireObject.Object.Queue;
 
-            var name = turnContext.Activity.From.Name.Replace(" | Redington", "");
+            var name = turnContext.Activity.From.Name.Replace(" | Redington", "").Replace(" | Godel", "");
 
             if (queue.Count <= 0) return;
 
@@ -47,9 +47,12 @@ namespace BatonBot.Commands
                     queue.FirstOrDefault().DateReceived = DateTime.Now;
                 }
 
+                var activity1 = MessageFactory.Text($"Releasing");
+                await turnContext.SendActivityAsync(activity1, cancellationToken);
+
                 await service.UpdateQueue(batonFireObject);
 
-                var activity = MessageFactory.Text($"Baton {type} released. Now its time to move your ticket into closed on the zenhub board");
+                var activity = MessageFactory.Text($"Baton {type} released.");
                 await turnContext.SendActivityAsync(activity, cancellationToken);
             }
             else
@@ -74,9 +77,7 @@ namespace BatonBot.Commands
 
         private Queue<BatonRequest> removeAnyInQueue(Queue<BatonRequest> batonQueue, string username, ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            var name = username.Replace(" | Redington", "");
-
-            return new Queue<BatonRequest>(batonQueue.Where(x => !x.UserName.Equals(name)));
+            return new Queue<BatonRequest>(batonQueue.Where(x => !x.UserName.Equals(username)));
         }
 
         private async Task Notify(BatonRequest batonRequest, ITurnContext<IMessageActivity> turnContext)

@@ -6,3 +6,5 @@ BatonBot/BatonBot.csproj.user
 /BatonBot/Release
 /BatonBot/bin
 /BatonBot/obj
+bin
+obj

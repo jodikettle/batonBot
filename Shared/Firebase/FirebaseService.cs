@@ -1,16 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using Firebase.Database;
+using SharedBaton.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BatonBot.Firebase;
-using BatonBot.Models;
 using Firebase.Auth;
-using Firebase.Database;
 using Firebase.Database.Query;
 using Microsoft.Extensions.Configuration;
 
-namespace BatonBot
+namespace SharedBaton.Firebase
 {
-    public class FirebaseServiceClient : IFirebaseClient
+    public class FirebaseService : IFirebaseService
     {
         private string firebaseApiKey;
         private string firebaseUserId;
@@ -18,13 +17,16 @@ namespace BatonBot
         private string firebaseLogin;
         private string firebasePassword;
 
-        public FirebaseServiceClient(IConfiguration config)
+        private string queueId;
+
+        public FirebaseService(IConfiguration config)
         {
             this.firebaseApiKey = config["FirebaseApiKey"];
             this.firebaseUserId = config["FirebaseUserId"];
             this.firebaseUrl = config["FirebaseUrl"];
             this.firebaseLogin = config["FirebaseLogin"];
             this.firebasePassword = config["FirebasePassword"];
+            this.queueId = config["QueueId"];
         }
 
         public async Task UpdateQueue(FirebaseObject<BatonQueue> queue)
@@ -40,6 +42,7 @@ namespace BatonBot
             await firebaseClient
                 .Child("Users")
                 .Child(firebaseUserId)
+                .Child(this.queueId)
                 .Child(queue.Key)
                 .PutAsync(queue.Object);
         }
@@ -57,6 +60,7 @@ namespace BatonBot
             await firebaseClient
                 .Child("Users")
                 .Child(firebaseUserId)
+                .Child(this.queueId)
                 .PostAsync(queue);
         }
 
@@ -73,6 +77,7 @@ namespace BatonBot
             var queues = await firebaseClient
                 .Child("Users")
                 .Child(firebaseUserId)
+                .Child(this.queueId)
                 .OnceAsync<BatonQueue>();
 
             return queues.ToList();

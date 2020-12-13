@@ -85,7 +85,7 @@
             "type": "Container",
             "items": [
                 {
-                    "type": "ColumnSet",
+                   "type": "ColumnSet",
                   "columns": [
                     {
                       "type": "Column",

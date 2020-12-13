@@ -2,16 +2,17 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using BatonBot.Models;
 using Firebase.Database;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using SharedBaton.Card;
+using SharedBaton.Models;
 
 namespace BatonBot.Cards
 {
-    public class Card
+    public class Card : ICardCreator
     {
-        public static Attachment CreateBatonsAttachment(IList<FirebaseObject<BatonQueue>> batons)
+        public Attachment CreateBatonsAttachment(IList<FirebaseObject<BatonQueue>> batons)
         {
             // combine path for cross platform support
             string[] paths = { ".", "Resources", "batonQueue.json" };
@@ -34,7 +35,7 @@ namespace BatonBot.Cards
             return adaptiveCardAttachment;
         }
 
-        private static string FormatQueue(BatonQueue queue)
+        private string FormatQueue(BatonQueue queue)
         {
             if (queue == null)
                 return $"[]";

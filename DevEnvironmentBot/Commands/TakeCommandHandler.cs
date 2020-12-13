@@ -2,25 +2,26 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SharedBaton.Firebase;
-using SharedBaton.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using SharedBaton.Commands;
-using SharedBaton.Services;
 using SharedBaton.Card;
+using SharedBaton.Commands;
+using SharedBaton.Firebase;
+using SharedBaton.Models;
+using SharedBaton.Services;
 
-namespace BatonBot.Commands
+namespace DevEnvironmentBot.Commands
 {
     public class TakeCommandHandler : ITakeCommandHandler
     {
         private readonly IFirebaseService service;
+        private readonly ICardCreator cardBuilder;
         private readonly GetAndDisplayBatonService showBatonService;
 
-        public TakeCommandHandler(IFirebaseService firebaseService, ICardCreator cardCreator)
+        public TakeCommandHandler(IFirebaseService firebaseService, ICardCreator cardBuilder)
         {
             this.service = firebaseService;
-            this.showBatonService = new GetAndDisplayBatonService(firebaseService, cardCreator);
+            this.showBatonService = new GetAndDisplayBatonService(firebaseService, cardBuilder);
         }
 
         public async void Handler(string type, ITurnContext<IMessageActivity> turnContext,
@@ -31,7 +32,7 @@ namespace BatonBot.Commands
 
             var conversationReference = turnContext.Activity.GetConversationReference();
 
-            var name = turnContext.Activity.From.Name.Replace(" | Redington", "");
+            var name = turnContext.Activity.From.Name.Replace(" | Redington", "").Replace(" | Godel", "");
 
             if (batonFireObject == null)
             {

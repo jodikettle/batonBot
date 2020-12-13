@@ -2,7 +2,7 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-namespace BatonBot.Commands
+namespace SharedBaton.Commands
 {
     public interface ITakeCommandHandler
     {
