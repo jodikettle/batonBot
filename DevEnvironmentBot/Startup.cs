@@ -12,13 +12,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using DevEnvironmentBot.Bots;
-using DevEnvironmentBot.Commands;
 using SharedBaton.Firebase;
-using SharedBaton.Commands;
 using SharedBaton.Card;
 using DevEnvironmentBot.Cards;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using SharedBaton.BatonServices;
+using SharedBaton.CommandHandlers;
+using SharedBaton.Commands;
+using SharedBaton.Interfaces;
 
 namespace DevEnvironmentBot
 {
@@ -46,9 +48,14 @@ namespace DevEnvironmentBot
             services.AddTransient<IBot, DevBot>();
 
             services.AddSingleton<ICardCreator, Card>();
-            services.AddSingleton<IFirebaseService, FirebaseService>();
-            services.AddTransient<ITakeCommandHandler, TakeCommandHandler>();
-            services.AddTransient<ICommandHandler, CommandHandler>();
+
+            services.AddSingleton<IFirebaseService, FirebaseService>(); 
+            services.AddSingleton<IBatonService, BatonService>();
+
+            services.AddSingleton<ICommandHandler, CommandHandler>();
+            services.AddSingleton<IShowCommandHandler, ShowCommandHandler>();
+            services.AddSingleton<ITakeCommandHandler, TakeCommandHandler>();
+            services.AddSingleton<IReleaseCommandHandler, ReleaseCommandHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

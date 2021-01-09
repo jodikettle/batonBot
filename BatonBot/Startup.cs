@@ -7,18 +7,18 @@ using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-using BatonBot.Commands;
 using Microsoft.Bot.Schema;
 using SharedBaton.Firebase;
 using SharedBaton.Commands;
-using BatonBot.Cards;
+using DevEnvironmentBot.Cards;
+using SharedBaton.BatonServices;
 using SharedBaton.Card;
+using SharedBaton.CommandHandlers;
+using SharedBaton.Interfaces;
 
 namespace BatonBot
 {
@@ -47,9 +47,11 @@ namespace BatonBot
 
             services.AddSingleton<IFirebaseService, FirebaseService>();
             services.AddSingleton<ICardCreator, Card>();
-            services.AddTransient<ITakeCommandHandler, TakeCommandHandler>();
-            services.AddTransient<ICommandHandler, CommandHandler>();
-            
+            services.AddSingleton<ITakeCommandHandler, TakeCommandHandler>();
+            services.AddSingleton<IReleaseCommandHandler, ReleaseCommandHandler>();
+            services.AddSingleton<IShowCommandHandler, ShowCommandHandler>();
+            services.AddSingleton<ICommandHandler, CommandHandler>(); 
+            services.AddSingleton<IBatonService, BatonService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,16 +61,16 @@ namespace BatonBot
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-            app.UseWebSockets();
-            //app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseDefaultFiles()
+                .UseStaticFiles()
+                .UseWebSockets()
+                .UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
         }
     }
 }

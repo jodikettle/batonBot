@@ -1,13 +1,12 @@
 ﻿using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
 namespace SharedBaton.Interfaces
 {
-    public interface ICommandHandler
+    public interface IShowCommandHandler
     {
-        Task Handle(string text, string appId, ITurnContext<IMessageActivity> turnContext,
+        void Handler(ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken);
     }
 }

@@ -7,7 +7,7 @@ using SharedBaton.Firebase;
 using SharedBaton.Models;
 using SharedBaton.Card;
 
-namespace SharedBaton.Services
+namespace SharedBaton.BatonServices
 {
     public class GetAndDisplayBatonService
     {

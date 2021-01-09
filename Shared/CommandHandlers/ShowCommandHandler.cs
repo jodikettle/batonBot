@@ -1,13 +1,14 @@
 ﻿using System.Threading;
-using SharedBaton.Firebase;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using SharedBaton.Services;
+using SharedBaton.BatonServices;
 using SharedBaton.Card;
+using SharedBaton.Firebase;
+using SharedBaton.Interfaces;
 
-namespace BatonBot.Commands
+namespace SharedBaton.CommandHandlers
 {
-    public class ShowCommandHandler
+    public class ShowCommandHandler : IShowCommandHandler
     {
         private readonly GetAndDisplayBatonService service;
 

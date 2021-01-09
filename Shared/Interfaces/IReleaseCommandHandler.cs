@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-namespace SharedBaton.Commands
+namespace SharedBaton.Interfaces
 {
-    public interface ITakeCommandHandler
+    public interface IReleaseCommandHandler
     {
-        Task Handler(string type, ITurnContext<IMessageActivity> turnContext,
+        Task Handler(string type, string appId, ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken);
     }
 }

@@ -7,11 +7,19 @@ using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using SharedBaton.Models;
 using SharedBaton.Card;
+using SharedBaton.Interfaces;
 
 namespace DevEnvironmentBot.Cards
 {
     public class Card : ICardCreator
     {
+        private readonly IBatonService batonList;
+
+        public Card(IBatonService batonList)
+        {
+            this.batonList = batonList;
+        }
+
         public Attachment CreateBatonsAttachment(IList<FirebaseObject<BatonQueue>> batons)
         {
             // combine path for cross platform support
@@ -21,7 +29,7 @@ namespace DevEnvironmentBot.Cards
             var listBuilder = new StringBuilder();
             var headerBuilder = new StringBuilder();
 
-            foreach (var baton in Batons.Batons.BatonList)
+            foreach (var baton in batonList.GetBatons())
             {
                 //Get the batonqueue
                 var batonQueue = batons?.FirstOrDefault(x => x.Object.Name == baton.Shortname);

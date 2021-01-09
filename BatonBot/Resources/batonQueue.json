@@ -1,111 +1,29 @@
 {
-    "type": "AdaptiveCard",
-    "version": "1.0",
-    "body": [
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
         {
-            "type": "Container",
-            "items": [
-                {
-                    "type": "ColumnSet",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": "stretch",
-                            "items": [
-                                {
-                                    "type": "Image",
-                                    "altText": "",
-                                    "url": "https://infomational-bucket.s3.eu-west-2.amazonaws.com/olympic-flame.png",
-                                    "size": "Small",
-                                    "horizontalAlignment": "Center"
-                                },
-                                {
-                                    "type": "RichTextBlock",
-                                    "inlines": [
-                                        {
-                                            "type": "TextRun",
-                                            "text": "Manifest"
-                                        }
-                                    ],
-                                    "horizontalAlignment": "Center"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": "stretch",
-                            "items": [
-                                {
-                                    "type": "Image",
-                                    "altText": "",
-                                    "horizontalAlignment": "Center",
-                                    "url": "https://infomational-bucket.s3.eu-west-2.amazonaws.com/olympic-flame.png",
-                                    "size": "Small"
-                                },
-                                {
-                                    "type": "RichTextBlock",
-                                    "inlines": [
-                                        {
-                                            "type": "TextRun",
-                                            "text": "Front-end"
-                                        }
-                                    ],
-                                    "horizontalAlignment": "Center"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": "stretch",
-                            "items": [
-                                {
-                                    "type": "Image",
-                                    "altText": "",
-                                    "horizontalAlignment": "Center",
-                                    "url": "https://infomational-bucket.s3.eu-west-2.amazonaws.com/olympic-flame.png",
-                                    "size": "Small"
-                                },
-                                {
-                                    "type": "RichTextBlock",
-                                    "inlines": [
-                                        {
-                                            "type": "TextRun",
-                                            "text": "Back-end"
-                                        }
-                                    ],
-                                    "horizontalAlignment": "Center"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "Container",
-            "items": [
-                {
-                   "type": "ColumnSet",
-                  "columns": [
-                    {
-                      "type": "Column",
-                      "width": "stretch",
-                      "items": "{manifestQueue}"
-                    },
-                    {
-                      "type": "Column",
-                      "width": "stretch",
-                      "items": "{frontQueue}"
-                    },
-                    {
-                      "type": "Column",
-                      "width": "stretch",
-                      "items": "{backendQueue}"
-                    }
-                  ]
-                }
-            ]
+          "type": "ColumnSet",
+          "columns": [
+            "{HeaderData}"
+          ]
         }
-    ],
-    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            "{QueueData}"
+          ]
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
 }
