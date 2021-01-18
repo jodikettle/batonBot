@@ -3,14 +3,14 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SharedBaton.Firebase;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using SharedBaton.Firebase;
 
-namespace BatonBot.Controllers
+namespace DevEnvironmentBot.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -49,14 +49,14 @@ namespace BatonBot.Controllers
                 if (queue.Count > 0)
                 {
                     var batonHolder = queue.FirstOrDefault();
-                    var threehoursAgo = DateTime.Now.AddHours(-3);
-                    if (batonHolder.DateReceived < threehoursAgo)
+                    var onehoursAgo = DateTime.Now.AddHours(-1);
+                    if (batonHolder.DateReceived < onehoursAgo)
                     {
                         if (batonHolder.Conversation != null)
                         {
-                            await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, batonHolder.Conversation, 
+                            await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, batonHolder.Conversation,
                                 async (context, token) => {
-                                await context.SendActivityAsync($"Hey! whatcha got there? Is it? Oh it is the {baton.Object.Name} baton");
+                                    await context.SendActivityAsync($"Hey! whatcha got there? Is it? Oh it is the {baton.Object.Name} baton");
                                 }, default(CancellationToken));
                         }
                     }
