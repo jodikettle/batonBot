@@ -14,7 +14,8 @@
     <copyright>Redington 2020</copyright>
   </metadata>
   <files>
-      <file src="..\BatonBot\bin\Release\netcoreapp3.1\BatonBot.dll" target="functions" />      
+      <file src="..\BatonBot\bin\Release\netcoreapp3.1\BatonBot.dll" target="functions" />
+	  <file src="..\BatonBot\bin\Release\netcoreapp3.1\SharedBaton.dll" target="functions" />    
 	  <file src="..\BatonBot\bin\Release\netcoreapp3.1\appSettings.json" target="functions" />
 	   />
 	  <file src="..\DevEnvironmentBot\bin\Release\netcoreapp3.1\DevEnvironmentBot.dll" target="functions" />   
