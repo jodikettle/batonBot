@@ -6,3 +6,9 @@ BatonBot/BatonBot.csproj.user
 /BatonBot/Release
 /BatonBot/bin
 /BatonBot/obj
+obj
+bin
+/Shared/bin
+/Shared/obj
+/DevEnvironmentBot/obj
+/DevEnvironmentBot/bin
