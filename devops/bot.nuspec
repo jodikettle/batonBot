@@ -9,12 +9,15 @@
     <licenseUrl>http://www.redington.co.uk</licenseUrl>
     <projectUrl>http://www.redington.co.uk</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Baton Bot</description>
+    <description>Baton Bots</description>
     <releaseNotes></releaseNotes>
     <copyright>Redington 2020</copyright>
   </metadata>
   <files>
-      <file src="..\bin\Debug\netcoreapp2.1\BatonBot.dll" target="functions" />      
-	  <file src="..\bin\Debug\netcoreapp2.1\appSettings.json" target="functions" />
+      <file src="..\BatonBot\bin\Release\netcoreapp3.1\BatonBot.dll" target="functions" />      
+	  <file src="..\BatonBot\bin\Release\netcoreapp3.1\appSettings.json" target="functions" />
+	   />
+	  <file src="..\DevEnvironmentBot\bin\Release\netcoreapp3.1\DevEnvironmentBot.dll" target="functions" />   
+	  <file src="..\DevEnvironmentBot\bin\Release\netcoreapp3.1\appSettings.json" target="functions" />
   </files>
 </package>
