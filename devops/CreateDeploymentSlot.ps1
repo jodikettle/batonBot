@@ -1,3 +1,5 @@
+Write-Host "Powershell starting"
+
 $resourceGroupName = $OctopusParameters["ResourceGroupName"]
 Write-Host "Resource group name $resourceGroupName"
 
