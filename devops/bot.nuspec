@@ -15,5 +15,6 @@
   </metadata>
   <files>
 	<file src="..\publish\**\**.*" target="\"></file>
+	<file src="..\publish1\**\**.*" target="\"></file>
   </files>
 </package>
