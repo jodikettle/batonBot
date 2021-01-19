@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BatonBot</id>
-    <version>0.0.1</version>
+    <version>$version$</version>
     <title>BatonBot</title>
     <authors>Redington Ltd</authors>
     <owners>Redington Ltd</owners>
@@ -11,11 +11,10 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Baton Bots</description>
     <releaseNotes></releaseNotes>
-    <copyright>Redington 2020</copyright>
+    <copyright>Redington 2021</copyright>
   </metadata>
   <files>
-      <file src="..\BatonBot\bin\Release\netcoreapp3.1\BatonBot.dll" target="functions" />
-	  <file src="..\BatonBot\bin\Release\netcoreapp3.1\SharedBaton.dll" target="functions" />    
-	  <file src="..\DevEnvironmentBot\bin\Release\netcoreapp3.1\DevEnvironmentBot.dll" target="functions" />   
+	<file src="..\publish\**\**.*" target="\"></file>
+	<file src="Scripts\Deploy\**\**.*" />
   </files>
 </package>
