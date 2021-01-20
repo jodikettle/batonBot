@@ -30,6 +30,9 @@
     <ProjectReference Include="..\Shared\SharedBaton.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="default.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="wwwroot\default.htm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
