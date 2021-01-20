@@ -14,8 +14,7 @@
     <copyright>Redington 2021</copyright>
   </metadata>
   <files>
-	<file src="..\BatonBot\publish\**\**.*" target="\"></file>
-	<file src="..\DevEnvironmentBot\publish\**\**.*" target="\"></file>
+	<file src="..\publish\**\**.*" target="\"></file>
 	<file src=".\CreateDeploymentSlot.ps1" target="\"></file>
   </files>
 </package>
