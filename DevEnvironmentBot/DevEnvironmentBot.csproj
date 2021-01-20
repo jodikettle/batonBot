@@ -23,4 +23,10 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="default.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
