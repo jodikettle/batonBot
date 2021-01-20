@@ -1,13 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk;Microsoft.NET.Sdk.Publish">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <UserSecretsId>74a1da19-ce01-42ea-a9f8-cf05aa1d4c55</UserSecretsId>
   </PropertyGroup>
-
   <ItemGroup>
-
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.11.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.11.1" />
@@ -16,8 +13,7 @@
     <PackageReference Include="Microsoft.Bot.Builder" Version="4.11.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.11.1" />
   </ItemGroup>
-
-    <ItemGroup>
+  <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -27,13 +23,15 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="TeamsAppManifest\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Shared\SharedBaton.csproj" />
-    </ItemGroup>
-
+  <ItemGroup>
+    <Folder Include="TeamsAppManifest\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\SharedBaton.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="wwwroot\default.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
