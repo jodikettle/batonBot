@@ -33,10 +33,7 @@ namespace SharedBaton.CommandHandlers
             CancellationToken cancellationToken)
         {
             // Filter out mention 
-            if (text.StartsWith($"<at>{config["AppName"]}</at> "))
-            {
-                text = text.Replace($"<at>{config["AppName"]}</at> ", "");
-            }
+            text = text.Replace($"<at>{config["AppName"]}</at> ", "");
 
             if (text.StartsWith("show"))
             {
