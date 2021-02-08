@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using SharedBaton.Firebase;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using SharedBaton.Card;
 using SharedBaton.Commands;
 using SharedBaton.Interfaces;
@@ -16,19 +17,27 @@ namespace SharedBaton.CommandHandlers
         private readonly ITakeCommandHandler takeHandler;
         private readonly IReleaseCommandHandler releaseHandler;
         private readonly IShowCommandHandler showHandler;
+        private readonly IConfiguration config;
 
         public CommandHandler(IFirebaseService client, ICardCreator cardCreator, IBatonService batonService,
-            ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IShowCommandHandler showCommandHandler)
+            ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IShowCommandHandler showCommandHandler, IConfiguration config)
         {
             this.batons = batonService;
             this.takeHandler = takeCommandHandler;
             this.releaseHandler = releaseCommandHandler;
             this.showHandler = showCommandHandler;
+            this.config = config;
         }
 
         public async Task Handle(string text, string appId, ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
+            // Filter out mention 
+            if (text.StartsWith($"<at>{config["AppName"]}</at> "))
+            {
+                text = text.Replace($"<at>{config["AppName"]}</at> ", "");
+            }
+
             if (text.StartsWith("show"))
             {
                 this.showHandler.Handler(turnContext, cancellationToken);
