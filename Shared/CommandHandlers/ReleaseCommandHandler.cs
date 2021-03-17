@@ -90,15 +90,16 @@ namespace SharedBaton.CommandHandlers
 
             if (batonRequest.Conversation != null)
             {
-                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, batonRequest.Conversation, BotCallback, default(CancellationToken));
+                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, batonRequest.Conversation, async (context, token) =>
+                    await BotCallback(batonRequest.BatonName, context, token), default(CancellationToken));
             }
         }
 
-        private async Task BotCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+        private async Task BotCallback(string name, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             // If you encounter permission-related errors when sending this message, see
             // https://aka.ms/BotTrustServiceUrl
-            await turnContext.SendActivityAsync("Hey! its your turn with the baton");
+            await turnContext.SendActivityAsync($"Hey! its your turn with the {name} baton");
         }
 
         private async Task SendNotYourBaton(ITurnContext turnContext, CancellationToken cancellationToken)

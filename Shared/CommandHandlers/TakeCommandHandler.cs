@@ -42,7 +42,8 @@ namespace SharedBaton.CommandHandlers
                     UserId = conversationReference.User.Id,
                     DateRequested = DateTime.Now.ToLocalTime(),
                     DateReceived = DateTime.Now.ToLocalTime(),
-                    Conversation = conversationReference
+                    Conversation = conversationReference,
+                    BatonName = type
                 });
 
                 service.SaveQueue(baton);
@@ -54,14 +55,14 @@ namespace SharedBaton.CommandHandlers
                 if (batonFireObject.Object.Queue.Count == 0)
                 {
                     batonFireObject.Object.Queue.Enqueue(new BatonRequest()
-                    { UserName = name, UserId = conversationReference.User.Id, DateRequested = DateTime.Now, DateReceived = DateTime.Now, Conversation = conversationReference });
+                    { UserName = name, UserId = conversationReference.User.Id, BatonName = type, DateRequested = DateTime.Now, DateReceived = DateTime.Now, Conversation = conversationReference });
 
                     this.SendItsAllYours(turnContext, cancellationToken);
                 }
                 else
                 {
                     batonFireObject.Object.Queue.Enqueue(new BatonRequest()
-                    { UserName = name, UserId = conversationReference.User.Id, DateRequested = DateTime.Now, Conversation = conversationReference });
+                    { UserName = name, UserId = conversationReference.User.Id, BatonName = type, DateRequested = DateTime.Now, Conversation = conversationReference });
 
                     await this.SendAddedToTheQueue(turnContext, cancellationToken);
                 }
