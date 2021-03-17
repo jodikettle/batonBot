@@ -3,6 +3,8 @@ namespace DevEnvironmentBot.Controllers
 {
     using Microsoft.Extensions.Configuration;
 
+    [Route("api/[controller]")]
+    [ApiController]
     public class TestController : Controller
     {
         private string _appId;
@@ -12,7 +14,8 @@ namespace DevEnvironmentBot.Controllers
             _appId = configuration["MicrosoftAppId"];
         }
 
-        public string Index()
+        [HttpGet]
+        public string Get()
         {
             return _appId;
         }
