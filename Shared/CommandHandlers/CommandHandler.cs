@@ -33,6 +33,12 @@ namespace SharedBaton.CommandHandlers
             CancellationToken cancellationToken)
         {
             // Filter out mention 
+            if (text.Contains("list"))
+            {
+                var activity = MessageFactory.Text($"Batons are {this.batons.List()}");
+                _ = turnContext.SendActivityAsync(activity, cancellationToken);
+                return;
+            }
             if (text.Contains("show"))
             {
                 this.showHandler.Handler(turnContext, cancellationToken);
