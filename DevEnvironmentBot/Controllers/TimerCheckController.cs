@@ -20,12 +20,14 @@ namespace DevEnvironmentBot.Controllers
         private readonly IBotFrameworkHttpAdapter _adapter;
         private readonly string _appId;
         private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        private readonly int _timerCheckAllowance;
 
         public TimerCheckController(IBotFrameworkHttpAdapter adapter, IConfiguration configuration, IFirebaseService firebaseClient, ConcurrentDictionary<string, ConversationReference> conversationReferences)
         {
             _adapter = adapter;
             _conversationReferences = conversationReferences;
             _appId = configuration["MicrosoftAppId"];
+            _timerCheckAllowance = Int32.Parse(configuration["TimerCheckAllowance"]);
 
             // If the channel is the Emulator, and authentication is not in use,
             // the AppId will be null.  We generate a random AppId for this case only.
@@ -49,7 +51,7 @@ namespace DevEnvironmentBot.Controllers
                 if (queue.Count > 0)
                 {
                     var batonHolder = queue.FirstOrDefault();
-                    var onehoursAgo = DateTime.Now.AddHours(-1);
+                    var onehoursAgo = DateTime.Now.AddHours(_timerCheckAllowance * -1);
                     if (batonHolder.DateReceived < onehoursAgo)
                     {
                         if (batonHolder.Conversation != null)

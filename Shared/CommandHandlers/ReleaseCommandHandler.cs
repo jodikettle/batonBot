@@ -17,7 +17,6 @@ namespace SharedBaton.CommandHandlers
     public class ReleaseCommandHandler : IReleaseCommandHandler
     {
         private readonly IFirebaseService service;
-        private readonly IConfiguration config;
         private readonly string releaseMessageText;
 
         public ReleaseCommandHandler(IFirebaseService firebaseClient, IConfiguration config)
