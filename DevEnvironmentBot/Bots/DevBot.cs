@@ -25,7 +25,7 @@ namespace DevEnvironmentBot.Bots
         {
             this._appId = config["MicrosoftAppId"];
             this._appPassword = config["MicrosoftAppPassword"];
-            this._appName = config["appName"];
+            this._appName = config["AppDisplayName"];
             this.commandHandler = commandHandler;
             this.Logger = logger;
         }
@@ -48,7 +48,7 @@ namespace DevEnvironmentBot.Bots
                 if (member.Id == turnContext.Activity.Recipient.Id)
                 {
                     // Send a message to introduce the bot to the team
-                    var heroCard = new HeroCard(text: $"Hi, I've joined in so that you can share the dev baton queue in this chat just call me @{this._appName} show baton");
+                    var heroCard = new HeroCard(text: $"Hi, I've joined in so that you can share the {this._appName} baton queue in this chat just call me @{this._appName} show baton");
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(heroCard.ToAttachment()), cancellationToken);
                 }
             }
