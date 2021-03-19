@@ -65,8 +65,11 @@ namespace DevEnvironmentBot.Cards
                 if (personInQueue != null)
                 {
                     var comma = i != 0 ? "," : "";
+
                     sb.AppendLine(
-                        $"{comma}{{\"type\" : \"RichTextBlock\", \"horizontalAlignment\": \"Center\", \"separator\": true, \"inlines\" : [{{ \"type\" : \"TextRun\", \"text\" : \"{personInQueue.UserName} Since:{personInQueue.DateRequested:dd MMM HH:mm}\"}}]}}");
+                        personInQueue.DateReceived.HasValue
+                            ? $"{comma}{{\"type\" : \"RichTextBlock\", \"horizontalAlignment\": \"Center\", \"separator\": true, \"inlines\" : [{{ \"type\" : \"TextRun\", \"text\" : \"{personInQueue.UserName} Received At:{personInQueue.DateReceived:dd MMM HH:mm}\"}}]}}"
+                            : $"{comma}{{\"type\" : \"RichTextBlock\", \"horizontalAlignment\": \"Center\", \"separator\": true, \"inlines\" : [{{ \"type\" : \"TextRun\", \"text\" : \"{personInQueue.UserName} Requested:{personInQueue.DateRequested:dd MMM HH:mm}\"}}]}}");
                 }
             }
 
