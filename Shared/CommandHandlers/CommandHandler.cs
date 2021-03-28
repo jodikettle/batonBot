@@ -66,7 +66,7 @@ namespace SharedBaton.CommandHandlers
 
             if (command.Equals("bananapancake"))
             {
-                var name = text.Replace(command + " ", "").Replace(type + " ", "");
+                var name = text.Replace(command + " ", "").Replace(type, "").TrimStart();
 
                 if (string.IsNullOrEmpty(name))
                 {
