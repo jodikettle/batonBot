@@ -28,6 +28,7 @@ namespace DevEnvironmentBot.Cards
 
             var listBuilder = new StringBuilder();
             var headerBuilder = new StringBuilder();
+            var commentBuilder = new StringBuilder();
 
             foreach (var baton in batonList.GetBatons())
             {
@@ -35,10 +36,12 @@ namespace DevEnvironmentBot.Cards
                 var batonQueue = batons?.FirstOrDefault(x => x.Object.Name == baton.Shortname);
                 listBuilder.Append(FormatQueue(batonQueue?.Object));
                 headerBuilder.Append(FormatHeader(batonQueue?.Object));
+                commentBuilder.Append(FormatComments(batonQueue?.Object));
             }
 
             adaptiveCardJson = adaptiveCardJson.Replace("\"{QueueData}\"", listBuilder.ToString());
             adaptiveCardJson = adaptiveCardJson.Replace("\"{HeaderData}\"", headerBuilder.ToString());
+            adaptiveCardJson = adaptiveCardJson.Replace("\"{CommentsData}\"", commentBuilder.ToString());
 
             var adaptiveCardAttachment = new Attachment()
             {
@@ -93,6 +96,39 @@ namespace DevEnvironmentBot.Cards
 
             sb.Append("]");
             sb.Append("},");
+
+            return sb.ToString();
+        }
+
+        private static string FormatComments(BatonQueue queue)
+        {
+            if (queue == null || queue.Queue.Count() == 0)
+                return $"";
+
+            var sb = new StringBuilder();
+
+            var queueArray = queue.Queue.ToArray();
+
+            sb.Append("{ \"type\": \"Container\",\"items\": [");
+
+            sb.Append(
+                $"{{\"type\": \"TextBlock\", \"text\": \"{queue.Name + " Baton"}\", \"spacing\": \"ExtraLarge\", \"height\": \"stretch\", \"size\": \"Medium\",\"fontType\": \"Default\"}}");
+
+            sb.Append(",{\"type\": \"Container\",\"items\": [");
+
+            var comments = queueArray.Where(x => x.Comment != string.Empty).ToArray();
+
+            for (var i = 0; i < comments.Length; i++)
+            {
+                var comma = i != 0 ? "," : "";
+                var comment = comments[i];
+
+                sb.Append(
+                    $"{comma}{{\"type\" : \"TextBlock\", \"text\" : \"* **{comment.UserName}** - {comment.Comment}\",\"isSubtle\": true, \"wrap\":true}}");
+            }
+
+            sb.Append("],\"separator\": true");
+            sb.Append("}]},");
 
             return sb.ToString();
         }

@@ -23,6 +23,51 @@
           ]
         }
       ]
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "selectAction": {
+            "type": "Action.ToggleVisibility",
+            "targetElements": [
+              "CommentCard",
+              "showHistory",
+              "hideHistory"
+            ]
+          },
+          "verticalContentAlignment": "Center",
+          "items": [
+            {
+              "type": "TextBlock",
+              "id": "showHistory",
+              "horizontalAlignment": "Right",
+              "color": "Accent",
+              "text": "Show comments",
+              "wrap": true
+            },
+            {
+              "type": "TextBlock",
+              "id": "hideHistory",
+              "horizontalAlignment": "Right",
+              "color": "Accent",
+              "text": "Hide comments",
+              "wrap": true,
+              "isVisible": false
+            }
+          ],
+          "width": 1
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "id": "CommentCard",
+      "isVisible": false,
+      "items": [
+        "{CommentsData}"
+      ]
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
