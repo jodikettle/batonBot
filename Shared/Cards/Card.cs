@@ -111,7 +111,7 @@ namespace DevEnvironmentBot.Cards
 
             var comments = queueArray.Where(x => x.Comment != string.Empty).ToArray();
 
-            if (comments.Any())
+            if (!comments.Any())
                 return $"";
 
             sb.Append("{ \"type\": \"Container\",\"items\": [");
