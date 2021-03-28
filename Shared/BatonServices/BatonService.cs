@@ -33,7 +33,7 @@ namespace SharedBaton.BatonServices
 
         public Baton CheckBatonType(string batonString)
         {
-            return this.batonList.FirstOrDefault(x => x.Shortname == batonString);
+            return this.batonList.FirstOrDefault(x => x.Shortname.ToLower() == batonString.ToLower());
         }
     }
 }

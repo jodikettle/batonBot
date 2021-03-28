@@ -55,6 +55,7 @@ namespace DevEnvironmentBot
             services.AddSingleton<IShowCommandHandler, ShowCommandHandler>();
             services.AddSingleton<ITakeCommandHandler, TakeCommandHandler>();
             services.AddSingleton<IReleaseCommandHandler, ReleaseCommandHandler>();
+            services.AddSingleton<IAdminReleaseCommandHandler, AdminReleaseCommandHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

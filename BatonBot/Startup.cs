@@ -49,6 +49,7 @@ namespace BatonBot
             services.AddSingleton<ICardCreator, Card>();
             services.AddSingleton<ITakeCommandHandler, TakeCommandHandler>();
             services.AddSingleton<IReleaseCommandHandler, ReleaseCommandHandler>();
+            services.AddSingleton<IAdminReleaseCommandHandler, AdminReleaseCommandHandler>();
             services.AddSingleton<IShowCommandHandler, ShowCommandHandler>();
             services.AddSingleton<ICommandHandler, CommandHandler>(); 
             services.AddSingleton<IBatonService, BatonService>();

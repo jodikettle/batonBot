@@ -11,5 +11,6 @@ namespace SharedBaton.Models
         public DateTime? DateReceived;
         public ConversationReference Conversation;
         public string BatonName;
+        public string Comment;
     }
 }
