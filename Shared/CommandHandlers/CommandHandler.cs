@@ -77,8 +77,7 @@ namespace SharedBaton.CommandHandlers
 
                 await this.adminReleaseHandler.Handler(batonType.Shortname, name, appId, turnContext, cancellationToken);
             }
-
-            if (command.Equals("release"))
+            else if (command.Equals("release"))
             {
                 await this.releaseHandler.Handler(batonType.Shortname, appId, turnContext, cancellationToken);
             }

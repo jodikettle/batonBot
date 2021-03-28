@@ -56,14 +56,22 @@ namespace SharedBaton.CommandHandlers
                 if (batonFireObject.Object.Queue.Count == 0)
                 {
                     batonFireObject.Object.Queue.Enqueue(new BatonRequest()
-                    { UserName = name, UserId = conversationReference.User.Id, BatonName = type, DateRequested = DateTime.Now, DateReceived = DateTime.Now, Conversation = conversationReference });
+                    {
+                        UserName = name, 
+                        UserId = conversationReference.User.Id, 
+                        BatonName = type, 
+                        DateRequested = DateTime.Now, 
+                        DateReceived = DateTime.Now,
+                        Conversation = conversationReference,
+                        Comment = comment
+                    });
 
                     this.SendItsAllYours(turnContext, cancellationToken);
                 }
                 else
                 {
                     batonFireObject.Object.Queue.Enqueue(new BatonRequest()
-                    { UserName = name, UserId = conversationReference.User.Id, BatonName = type, DateRequested = DateTime.Now, Conversation = conversationReference });
+                    { UserName = name, UserId = conversationReference.User.Id, BatonName = type, DateRequested = DateTime.Now, Conversation = conversationReference, Comment = comment });
 
                     await this.SendAddedToTheQueue(turnContext, cancellationToken);
                 }
