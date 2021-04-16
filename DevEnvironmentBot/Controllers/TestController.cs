@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 namespace DevEnvironmentBot.Controllers
 {
+    using System;
     using Microsoft.Extensions.Configuration;
 
     [Route("api/[controller]")]
@@ -23,7 +24,7 @@ namespace DevEnvironmentBot.Controllers
         [HttpGet("Test")]
         public string GetConfig()
         {
-            return _appId;
+            return DateTime.Now.ToString();
         }
     }
 }
