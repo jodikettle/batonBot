@@ -19,5 +19,11 @@ namespace DevEnvironmentBot.Controllers
         {
             return _appId;
         }
+
+        [HttpGet("Test")]
+        public string GetConfig()
+        {
+            return _appId;
+        }
     }
 }
