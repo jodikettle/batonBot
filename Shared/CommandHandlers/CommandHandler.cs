@@ -17,17 +17,19 @@ namespace SharedBaton.CommandHandlers
         private readonly ITakeCommandHandler takeHandler;
         private readonly IReleaseCommandHandler releaseHandler;
         private readonly IAdminReleaseCommandHandler adminReleaseHandler;
+        private readonly IMoveMeCommandHandler moveMeHandler;
         private readonly IShowCommandHandler showHandler;
         private readonly IConfiguration config;
 
         public CommandHandler(IFirebaseService client, ICardCreator cardCreator, IBatonService batonService,
-            ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IAdminReleaseCommandHandler adminReleaseCommandHandler, IShowCommandHandler showCommandHandler, IConfiguration config)
+            ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IAdminReleaseCommandHandler adminReleaseCommandHandler, IShowCommandHandler showCommandHandler, IMoveMeCommandHandler moveMeCommandHandler, IConfiguration config)
         {
             this.batons = batonService;
             this.takeHandler = takeCommandHandler;
             this.releaseHandler = releaseCommandHandler;
             this.showHandler = showCommandHandler;
             this.adminReleaseHandler = adminReleaseCommandHandler;
+            this.moveMeHandler = moveMeCommandHandler;
             this.config = config;
         }
 
@@ -76,6 +78,10 @@ namespace SharedBaton.CommandHandlers
                 }
 
                 await this.adminReleaseHandler.Handler(batonType.Shortname, name, appId, turnContext, cancellationToken);
+            }
+            else if (command.Equals("moveme"))
+            {
+                await this.moveMeHandler.Handler(batonType.Shortname, appId, turnContext, cancellationToken);
             }
             else if (command.Equals("release"))
             {

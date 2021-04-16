@@ -87,12 +87,24 @@ namespace DevEnvironmentBot.Cards
             if (queue == null || queue.Queue.Count() == 0)
                 return $"";
 
+            var hasComment = queue.Queue.Any(x => !string.IsNullOrEmpty(x.Comment));
+
             var sb = new StringBuilder();
             sb.Append($"{{\"type\" : \"Column\", \"width\" : \"stretch\", \"items\":");
             sb.Append("[");
 
-            sb.AppendLine($"{{\"type\" : \"Image\", \"altText\": \"\", \"url\": \"https://infomational-bucket.s3.eu-west-2.amazonaws.com/olympic-flame.png\", \"size\" : \"small\", \"horizontalAlignment\": \"Center\" }}," +
-            $"{{\"type\" : \"RichTextBlock\", \"horizontalAlignment\": \"Center\", \"inlines\": [{{ \"type\" : \"TextRun\", \"text\" : \"{queue.Name}\"}}]}},");
+            if (hasComment)
+            {
+                sb.AppendLine(
+                    $"{{\"type\" : \"Image\", \"altText\": \"\", \"url\": \"https://infomational-bucket.s3.eu-west-2.amazonaws.com/olympic-flame.png\", \"size\" : \"small\", \"horizontalAlignment\": \"Center\" }}," +
+                    $"{{\"type\" : \"RichTextBlock\", \"horizontalAlignment\": \"Center\", \"inlines\": [{{ \"type\" : \"TextRun\", \"text\" : \"{queue.Name}*\"}}]}},");
+            }
+            else
+            {
+                sb.AppendLine(
+                    $"{{\"type\" : \"Image\", \"altText\": \"\", \"url\": \"https://infomational-bucket.s3.eu-west-2.amazonaws.com/olympic-flame.png\", \"size\" : \"small\", \"horizontalAlignment\": \"Center\" }}," +
+                    $"{{\"type\" : \"RichTextBlock\", \"horizontalAlignment\": \"Center\", \"inlines\": [{{ \"type\" : \"TextRun\", \"text\" : \"{queue.Name}\"}}]}},");
+            }
 
             sb.Append("]");
             sb.Append("},");
