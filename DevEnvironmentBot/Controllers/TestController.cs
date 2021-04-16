@@ -11,7 +11,7 @@ namespace DevEnvironmentBot.Controllers
 
         public TestController(IConfiguration configuration)
         {
-            _appId = configuration["MicrosoftAppId"];
+            _appId = configuration["WEBSITE_TIME_ZONE"];
         }
 
         [HttpGet]
