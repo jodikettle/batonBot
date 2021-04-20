@@ -56,11 +56,11 @@ namespace DevEnvironmentBot.Controllers
                     {
                         if (batonHolder.Conversation != null)
                         {
-                            //await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, batonHolder.Conversation,
-                            //    async (context, token) =>
-                            //    {
-                            //        await context.SendActivityAsync($"Hey! whatcha got there? Is it? Oh it is the {baton.Object.Name} baton");
-                            //    }, default(CancellationToken));
+                            await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, batonHolder.Conversation,
+                                async (context, token) =>
+                                {
+                                    await context.SendActivityAsync($"Hey! whatcha got there? Is it? Oh it is the {baton.Object.Name} baton");
+                                }, default(CancellationToken));
                         }
                     }
                 }
