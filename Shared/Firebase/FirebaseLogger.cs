@@ -19,8 +19,8 @@
 
         public FirebaseLogger(IConfiguration config)
         {
-            this.firebaseApiKey = config["FirebaseApiKey"];
-            this.firebaseUserId = config["FirebaseUserId"];
+            this.firebaseApiKey = config["FirebaseLogApiKey"];
+            this.firebaseUserId = config["FirebaseLogUserId"];
             this.firebaseLogUrl = config["FirebaseLogsUrl"];
             this.firebaseLogin = config["FirebaseLogsLogin"];
             this.firebasePassword = config["FirebaseLogsPassword"];
