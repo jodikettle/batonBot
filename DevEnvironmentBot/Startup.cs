@@ -57,6 +57,7 @@ namespace DevEnvironmentBot
             services.AddSingleton<IReleaseCommandHandler, ReleaseCommandHandler>();
             services.AddSingleton<IAdminReleaseCommandHandler, AdminReleaseCommandHandler>();
             services.AddSingleton<IMoveMeCommandHandler, MoveMeCommandHandler>();
+            services.AddSingleton<IFirebaseLogger, FirebaseLogger>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,8 +77,6 @@ namespace DevEnvironmentBot
                 {
                     endpoints.MapControllers();
                 });
-
-            // app.UseHttpsRedirection();
         }
     }
 }

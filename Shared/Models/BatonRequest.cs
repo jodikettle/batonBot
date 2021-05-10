@@ -12,5 +12,6 @@ namespace SharedBaton.Models
         public ConversationReference Conversation;
         public string BatonName;
         public string Comment;
+        public int MoveMeCount;
     }
 }

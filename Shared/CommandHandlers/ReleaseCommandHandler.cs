@@ -18,11 +18,15 @@ namespace SharedBaton.CommandHandlers
     {
         private readonly IFirebaseService service;
         private readonly string releaseMessageText;
+        private readonly IConfiguration config;
+        private readonly IFirebaseLogger logger;
 
-        public ReleaseCommandHandler(IFirebaseService firebaseClient, IConfiguration config)
+        public ReleaseCommandHandler(IFirebaseService firebaseClient, IConfiguration config, IFirebaseLogger logger)
         {
             this.service = firebaseClient;
+            this.config = config;
             this.releaseMessageText = config["ReleaseBatonText"];
+            this.logger = logger;
         }
 
         public async Task Handler(string type, string appId, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -41,7 +45,7 @@ namespace SharedBaton.CommandHandlers
             // Does the first one belong to that person
             if (queue.First().UserName.Equals(name))
             {
-                queue.Dequeue();
+                var oldBatonRequest = queue.Dequeue();
 
                 if (queue.Count > 0)
                 {
@@ -51,6 +55,10 @@ namespace SharedBaton.CommandHandlers
                 }
 
                 await service.UpdateQueue(batonFireObject);
+
+                this.logger.Log(config["AppDisplayName"],
+                    type, name, oldBatonRequest.DateRequested, oldBatonRequest.DateReceived, DateTime.Now,
+                    oldBatonRequest.MoveMeCount, false);
 
                 var activity = MessageFactory.Text(this.releaseMessageText.Replace("{type}", type));
                 await turnContext.SendActivityAsync(activity, cancellationToken);
