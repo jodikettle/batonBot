@@ -43,7 +43,7 @@ namespace DevEnvironmentBot.Controllers
             this.service = firebaseClient;
         }
 
-        [HttpGet]
+        [HttpGet("{batonName}")]
         public async Task Get(string batonName)
         {
             var batons = service.GetQueue().GetAwaiter().GetResult();
