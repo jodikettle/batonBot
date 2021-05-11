@@ -53,12 +53,11 @@ namespace DevEnvironmentBot.Cards
 
         public static HeroCard GetUpdateYourBranchCard(string batonName)
         {
-            //var linkToBuild = $"{baseUrl}/api/somebodysmerged/update";
             var heroCard = new HeroCard
             {
                 Title = $"Someone has merged into the repo for {batonName}",
                 Text = $"As you are next you should update your branch",
-                Buttons = new List<CardAction> { new CardAction(ActionTypes.ImBack, "Update Branch With Master") },
+                Buttons = new List<CardAction> { new CardAction(ActionTypes.ImBack, "Update Branch With Master",null,null,null, "Update Branch With Master", null )}
             };
 
             return heroCard;
