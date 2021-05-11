@@ -10,6 +10,8 @@ using SharedBaton.Interfaces;
 
 namespace SharedBaton.CommandHandlers
 {
+    using SharedBaton.GitHubService;
+
     public class CommandHandler : ICommandHandler
     {
         private IBatonService batons;
@@ -19,10 +21,12 @@ namespace SharedBaton.CommandHandlers
         private readonly IAdminReleaseCommandHandler adminReleaseHandler;
         private readonly IMoveMeCommandHandler moveMeHandler;
         private readonly IShowCommandHandler showHandler;
+        private readonly IGithubUpdateHandler githubUpdateHandler;
         private readonly IConfiguration config;
 
         public CommandHandler(IFirebaseService client, ICardCreator cardCreator, IBatonService batonService,
-            ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IAdminReleaseCommandHandler adminReleaseCommandHandler, IShowCommandHandler showCommandHandler, IMoveMeCommandHandler moveMeCommandHandler, IConfiguration config)
+            ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IAdminReleaseCommandHandler adminReleaseCommandHandler, IShowCommandHandler showCommandHandler, IMoveMeCommandHandler moveMeCommandHandler,
+            IGithubUpdateHandler githubUpdateHandler, IConfiguration config)
         {
             this.batons = batonService;
             this.takeHandler = takeCommandHandler;
@@ -30,6 +34,7 @@ namespace SharedBaton.CommandHandlers
             this.showHandler = showCommandHandler;
             this.adminReleaseHandler = adminReleaseCommandHandler;
             this.moveMeHandler = moveMeCommandHandler;
+            this.githubUpdateHandler = githubUpdateHandler;
             this.config = config;
         }
 
@@ -48,13 +53,6 @@ namespace SharedBaton.CommandHandlers
                 this.showHandler.Handler(turnContext, cancellationToken);
                 return;
             }
-            if (text.Contains("Update Branch With Master"))
-            {
-                var activity = MessageFactory.Text($"Jokes you need to go to your pull request for that?");
-                _ = turnContext.SendActivityAsync(activity, cancellationToken);
-                return;
-            }
-
             if (text.IndexOf(' ') == -1)
             {
                 var activity = MessageFactory.Text($"Sorry I don't quite understand that?");
@@ -98,6 +96,13 @@ namespace SharedBaton.CommandHandlers
             {
                 var comment = text.Replace(command + " ", "").Replace(type, "");
                 await this.takeHandler.Handler(batonType.Shortname, comment.TrimStart(), turnContext, cancellationToken);
+            }
+            else if (command.Equals("updategithub"))
+            {
+                var activity = MessageFactory.Text($"Jokes you need to go to your pull request for that!");
+                _ = turnContext.SendActivityAsync(activity, cancellationToken);
+
+                await this.githubUpdateHandler.Handler(batonType.Shortname, appId, turnContext, cancellationToken);
             }
             else
             {
