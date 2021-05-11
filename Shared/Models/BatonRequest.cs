@@ -13,5 +13,6 @@ namespace SharedBaton.Models
         public string BatonName;
         public string Comment;
         public int MoveMeCount;
+        public int PullRequestNumber;
     }
 }

@@ -94,8 +94,22 @@ namespace SharedBaton.CommandHandlers
             }
             else if (command.Equals("take"))
             {
-                var comment = text.Replace(command + " ", "").Replace(type, "");
-                await this.takeHandler.Handler(batonType.Shortname, comment.TrimStart(), turnContext, cancellationToken);
+                var comment = text.Replace(command + " ", "").Replace(type, "").Trim();
+                var tokenised = comment.Trim().Split(" ");
+
+                int prNumber = 0;
+
+                if (tokenised.Length > 0)
+                {
+                    int.TryParse(tokenised[0], out prNumber);
+                }
+
+                if (prNumber > 0)
+                {
+                    comment = comment.Replace(prNumber.ToString(), "").Trim();
+                }
+
+                await this.takeHandler.Handler(batonType.Shortname, comment.TrimStart(), prNumber, turnContext, cancellationToken);
             }
             else if (command.Equals("updategithub"))
             {

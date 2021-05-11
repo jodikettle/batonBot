@@ -23,7 +23,7 @@ namespace SharedBaton.CommandHandlers
             this.service = firebaseService;
             this.showBatonService = new GetAndDisplayBatonService(firebaseService, cardBuilder);
         }
-        public async Task Handler(string type, string comment, ITurnContext<IMessageActivity> turnContext,
+        public async Task Handler(string type, string comment, int pullRequest, ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
             var batons = service.GetQueue().GetAwaiter().GetResult();
@@ -44,7 +44,8 @@ namespace SharedBaton.CommandHandlers
                     DateReceived = DateTime.Now.ToLocalTime(),
                     Conversation = conversationReference,
                     BatonName = type,
-                    Comment = comment
+                    Comment = comment,
+                    PullRequestNumber = pullRequest
                 });
 
                 service.SaveQueue(baton);

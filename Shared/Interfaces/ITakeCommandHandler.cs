@@ -7,7 +7,7 @@ namespace SharedBaton.Commands
 {
     public interface ITakeCommandHandler
     {
-        Task Handler(string type, string comment, ITurnContext<IMessageActivity> turnContext,
+        Task Handler(string type, string comment, int pullRequest, ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken);
     }
 }
