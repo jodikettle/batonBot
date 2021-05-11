@@ -58,7 +58,7 @@ namespace DevEnvironmentBot.Cards
             {
                 Title = $"Someone has merged into the repo for {batonName}",
                 Text = $"As you are next you should update your branch",
-                //Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Update Branch With Master", value: linkToBuild) },
+                Buttons = new List<CardAction> { new CardAction(ActionTypes.ImBack, "Update Branch With Master") },
             };
 
             return heroCard;

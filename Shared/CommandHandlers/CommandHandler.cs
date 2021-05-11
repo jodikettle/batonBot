@@ -48,6 +48,13 @@ namespace SharedBaton.CommandHandlers
                 this.showHandler.Handler(turnContext, cancellationToken);
                 return;
             }
+            if (text.Contains("Update Branch With Master"))
+            {
+                var activity = MessageFactory.Text($"Jokes you need to go to your pull request for that?");
+                _ = turnContext.SendActivityAsync(activity, cancellationToken);
+                return;
+            }
+
             if (text.IndexOf(' ') == -1)
             {
                 var activity = MessageFactory.Text($"Sorry I don't quite understand that?");
