@@ -51,6 +51,19 @@ namespace DevEnvironmentBot.Cards
             return adaptiveCardAttachment;
         }
 
+        public static HeroCard GetUpdateYourBranchCard(string batonName)
+        {
+            var linkToBuild = "";
+            var heroCard = new HeroCard
+            {
+                Title = $"Someone has merged into the repo for {batonName}",
+                Text = $"As you are next you should update your branch",
+                Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Update Branch With Master", value: linkToBuild) },
+            };
+
+            return heroCard;
+        }
+
         private static string FormatQueue(BatonQueue queue)
         {            
             if (queue == null || queue.Queue.Count() == 0)
