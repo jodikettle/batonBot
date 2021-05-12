@@ -1,0 +1,86 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.9/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.9",
+  "version": "1.0.1",
+  "id": "88e0d46f-2fd0-402f-95c7-62b1066b1240",
+  "packageName": "devBot",
+  "developer": {
+    "name": "Jodi Kettle",
+    "websiteUrl": "https://redingtonlimited.sharepoint.com/sites/Dashboard/SitePages/FrankApps.aspx",
+    "privacyUrl": "https://redingtonlimited.sharepoint.com/sites/Dashboard/SitePages/FrankApps.aspx",
+    "termsOfUseUrl": "https://redingtonlimited.sharepoint.com/sites/Dashboard/SitePages/FrankApps.aspx"
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "DevBot",
+    "full": "Teams Bot to handle a baton for dev environments"
+  },
+  "description": {
+    "short": "Manages access to development environments",
+    "full": "Allows show baton, take and release batons for the DEV environments"
+  },
+  "accentColor": "#166678",
+  "bots": [
+    {
+      "botId": "88e0d46f-2fd0-402f-95c7-62b1066b1240",
+      "scopes": [
+        "personal",
+        "team",
+        "groupchat"
+      ],
+      "commandLists": [
+        {
+          "scopes": [
+            "personal"
+          ],
+          "commands": [
+            {
+              "title": "show baton",
+              "description": "Shows current Baton queue for the dev environments"
+            },
+            {
+              "title": "take",
+              "description": "Take dev environment for testing"
+            },
+            {
+              "title": "release",
+              "description": "once finished release the baton"
+            }
+          ]
+        },
+        {
+          "scopes": [
+            "team"
+          ],
+          "commands": [
+            {
+              "title": "show baton",
+              "description": "Shows current Baton queue for the dev environments"
+            }
+          ]
+        },
+        {
+          "scopes": [
+            "groupchat"
+          ],
+          "commands": [
+            {
+              "title": "show baton",
+              "description": "Shows current Baton queue for the dev environments"
+            }
+          ]
+        }
+      ],
+      "supportsFiles": false,
+      "isNotificationOnly": false
+    }
+  ],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": []
+}
