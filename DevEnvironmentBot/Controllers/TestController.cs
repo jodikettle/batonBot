@@ -2,23 +2,26 @@
 namespace DevEnvironmentBot.Controllers
 {
     using System;
-    using Microsoft.Extensions.Configuration;
+    using System.Threading.Tasks;
+    using SharedBaton.GitHubService;
+    using SharedBaton.Models;
 
     [Route("api/[controller]")]
     [ApiController]
     public class TestController : Controller
     {
-        private string _appId;
+        private IGitHubService service;
 
-        public TestController(IConfiguration configuration)
+        public TestController(IGitHubService service)
         {
-            _appId = configuration["WEBSITE_TIME_ZONE"];
+            this.service = service;
         }
 
-        [HttpGet]
-        public string Get()
+
+        [HttpGet("{prNumber}")]
+        public async Task<PullRequest> Get(int prNumber)
         {
-            return _appId;
+            return await this.service.getPRInfo("ADA-Research-UI", prNumber);
         }
 
         [HttpGet("Test")]
