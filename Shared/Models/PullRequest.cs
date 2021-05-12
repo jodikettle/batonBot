@@ -8,6 +8,10 @@
 
         public string body;
 
+        public bool merged;
+
+        public string mergable_state;
+
         public HeadInfo head;
 
         public string GetMergeDecriptionString()

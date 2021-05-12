@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using SharedBaton.Firebase;
 using SharedBaton.Interfaces;
 using SharedBaton.Models;
+using DevEnvironmentBot.Cards;
 
 namespace SharedBaton.CommandHandlers
 {
@@ -98,11 +99,48 @@ namespace SharedBaton.CommandHandlers
             if (batonRequest.Conversation != null)
             {
                 await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, batonRequest.Conversation, async (context, token) =>
-                    await BotCallback(batonRequest.BatonName, context, token), default(CancellationToken));
+                    await SendYourBatonMessage(batonRequest.BatonName, context, token), default(CancellationToken));
+
+                await this.SendButtonsForMergeIfApplicable(batonRequest, appId, turnContext);
             }
         }
 
-        private async Task BotCallback(string name, ITurnContext turnContext, CancellationToken cancellationToken)
+        private async Task SendButtonsForMergeIfApplicable(BatonRequest batonRequest, string appId, ITurnContext<IMessageActivity> turnContext)
+        {
+            var attachments = new List<Attachment>();
+            var reply = MessageFactory.Attachment(attachments);
+
+            var repo = string.Empty;
+
+            if (batonRequest.BatonName == "be")
+            {
+                repo = "maraschino";
+            }
+
+            if (batonRequest.BatonName == "fe")
+            {
+                repo = "ADA-Research-UI";
+            }
+
+            if (batonRequest.BatonName == "man")
+            {
+                repo = "ADA-Research-Configuration";
+            }
+
+            if (!string.IsNullOrEmpty(repo) && batonRequest.PullRequestNumber > 0)
+            {
+                reply.Attachments.Add(
+                    DevEnvironmentBot.Cards.Card.ItsYourTurnWithTheBatonCard(
+                            batonRequest.BatonName, repo, batonRequest.PullRequestNumber)
+                        .ToAttachment());
+
+                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+                    appId, batonRequest.Conversation, async (context, token) =>
+                        await this.BotCallback(reply, context, token), default(CancellationToken));
+            }
+        }
+
+        private async Task SendYourBatonMessage(string name, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             // If you encounter permission-related errors when sending this message, see
             // https://aka.ms/BotTrustServiceUrl
@@ -113,6 +151,13 @@ namespace SharedBaton.CommandHandlers
         {
             var reply = MessageFactory.Text($"I couldn't find you in the list");
             await turnContext.SendActivityAsync(reply, cancellationToken);
+        }
+
+        private async Task BotCallback(IMessageActivity message, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            // If you encounter permission-related errors when sending this message, see
+            // https://aka.ms/BotTrustServiceUrl
+            await turnContext.SendActivityAsync(message, cancellationToken);
         }
     }
 }

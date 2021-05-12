@@ -12,17 +12,23 @@
     public class GitHubService : IGitHubService
     {
         private readonly string gitHubApiUrl;
+        private readonly string gitHubAccessToken;
 
         public GitHubService(IConfiguration config)
         {
             this.gitHubApiUrl = config["GithubUrl"];
+            this.gitHubAccessToken = config["GitHubApiKey"];
         }
 
         public async Task<bool> CloseTicket(string repo, int issueNumber)
         {
             var result = await this.gitHubApiUrl
                 .AppendPathSegment($"/repos/ada/{repo}/issues/{issueNumber}")
-                .WithHeader("Accept", "application/vnd.github.v3+json")
+                .WithHeaders(new
+                {
+                    Accept = "application/vnd.github.v3+json",
+                    Authorization = $"token {gitHubAccessToken}"
+                })
                 .PatchAsync();
 
             return result.StatusCode == 200;
@@ -31,11 +37,11 @@
         public async Task<PullRequest> getPRInfo(string repo, int prNumber)
         {
             // GET / repos /{ owner}/{ repo}/ pulls /{ pull_number}
-            var client = new RestClient($"https://api.github.com/repos/redington/{repo}/pulls/{prNumber}?access_token=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");
+            var client = new RestClient($"https://api.github.com/repos/redington/{repo}/pulls/{prNumber}");
             var request = new RestRequest(Method.GET);
             request.AddHeader("postman-token", "4783d919-ab08-8f57-f2d0-a63200c68ee4");
             request.AddHeader("cache-control", "no-cache");
-            request.AddHeader("authorization", "token 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");
+            request.AddHeader("authorization", $"token {gitHubAccessToken}");
             IRestResponse response = client.Execute(request);
 
             if (response.StatusCode == HttpStatusCode.OK)
@@ -60,15 +66,30 @@
             //Get Pull Request 
             var pr = await this.getPRInfo(repo, prNumber);
 
-            var result = await this.gitHubApiUrl
-                .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/merge")
-                .WithHeader("Accept", "application/vnd.github.v3+json")
-                .PutJsonAsync(new {
-                    commit_title = pr.head.reference,
-                    commit_message = pr.GetMergeDecriptionString()
-                });
+            if (pr.mergable_state != "blocked" && pr.merged)
+            {
 
-            return result.StatusCode == 200;
+                var result = await this.gitHubApiUrl
+                    .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/merge")
+                    .WithHeaders(new
+                    {
+                        Accept = "application/vnd.github.v3+json",
+                        Authorization = $"token {gitHubAccessToken}"
+                    })
+                    .PutJsonAsync(
+                        new
+                        {
+                            commit_title = pr.head.reference,
+                            commit_message = pr.GetMergeDecriptionString(),
+                            merge_method = "squash"
+                        });
+
+                return result.StatusCode == 200;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public async Task<bool> UpdatePullRequest(string repo, int prNumber)
@@ -77,7 +98,7 @@
                 .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/update-branch")
                 .WithHeaders(new {
                     Accept = "application/vnd.github.lydian-preview+json",
-                    Authorization = "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"
+                    Authorization = $"token {gitHubAccessToken}"
                 })
                 .PutAsync();
 
