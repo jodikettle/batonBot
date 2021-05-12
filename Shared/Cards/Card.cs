@@ -60,7 +60,7 @@ namespace DevEnvironmentBot.Cards
                 {
                     new CardAction(ActionTypes.OpenUrl, "Open Pull Request", value: $"https://github.com/Redington/{reponame}/pull/{prNumber}"),
                     new CardAction(
-                        ActionTypes.ImBack, "Update Branch With Master", null, null, null, $"updategithub {batonName}", null)
+                        ActionTypes.ImBack, "Update Branch With Master", null, null, null, $"updategithub {batonName} {prNumber}", null)
                 };
             }
 
@@ -68,6 +68,28 @@ namespace DevEnvironmentBot.Cards
             {
                 Title = $"Someone has merged into the repo for {batonName}",
                 Text = $"As you are next you should update your branch",
+                Buttons = actions
+            };
+
+            return heroCard;
+        }
+
+        public static HeroCard ItsYourTurnWithTheBatonCard(string batonName, string reponame, int prNumber)
+        {
+            List<CardAction> actions = null;
+            if (prNumber > 0)
+            {
+                actions = new List<CardAction>
+                {
+                    new CardAction(ActionTypes.OpenUrl, "Open Pull Request", value: $"https://github.com/Redington/{reponame}/pull/{prNumber}"),
+                    new CardAction(
+                        ActionTypes.ImBack, "Squash And Merge", null, null, null, $"mergegithub {batonName} {prNumber}", null)
+                };
+            }
+
+            var heroCard = new HeroCard
+            {
+                Title = $"Do you want to merge it here",
                 Buttons = actions
             };
 

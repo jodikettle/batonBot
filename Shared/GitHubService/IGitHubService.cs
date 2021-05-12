@@ -1,11 +1,13 @@
 ﻿namespace SharedBaton.GitHubService
 {
     using System.Threading.Tasks;
+    using SharedBaton.Models;
 
     public interface IGitHubService
     {
-        public Task<bool> UpdatePullRequest(string repo, int prNumber);
-
-        public Task CloseTicket(string repo, int prNumber);
+         Task<bool> UpdatePullRequest(string repo, int prNumber);
+         Task<bool> MergePullRequest(string repo, int issueNumber);
+         Task<bool> CloseTicket(string repo, int issueNumber);
+         Task<PullRequest> getPRInfo(string repo, int prNumber);
     }
 }
