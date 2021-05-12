@@ -10,8 +10,6 @@ using SharedBaton.Interfaces;
 
 namespace SharedBaton.CommandHandlers
 {
-    using SharedBaton.GitHubService;
-
     public class CommandHandler : ICommandHandler
     {
         private IBatonService batons;
@@ -113,9 +111,6 @@ namespace SharedBaton.CommandHandlers
             }
             else if (command.Equals("updategithub"))
             {
-                var activity = MessageFactory.Text($"Jokes you need to go to your pull request for that!");
-                _ = turnContext.SendActivityAsync(activity, cancellationToken);
-
                 await this.githubUpdateHandler.Handler(batonType.Shortname, appId, turnContext, cancellationToken);
             }
             else

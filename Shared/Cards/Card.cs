@@ -51,13 +51,24 @@ namespace DevEnvironmentBot.Cards
             return adaptiveCardAttachment;
         }
 
-        public static HeroCard GetUpdateYourBranchCard(string batonName)
+        public static HeroCard GetUpdateYourBranchCard(string batonName, string reponame, int prNumber)
         {
+            List<CardAction> actions = null;
+            if (prNumber> 0 )
+            {
+                actions = new List<CardAction>
+                {
+                    new CardAction(ActionTypes.OpenUrl, "Open Pull Request", value: $"https://github.com/Redington/{reponame}/pull/{prNumber}"),
+                    new CardAction(
+                        ActionTypes.ImBack, "Update Branch With Master", null, null, null, $"updategithub {batonName}", null)
+                };
+            }
+
             var heroCard = new HeroCard
             {
                 Title = $"Someone has merged into the repo for {batonName}",
                 Text = $"As you are next you should update your branch",
-                // Buttons = new List<CardAction> { new CardAction(ActionTypes.ImBack, "Update Branch With Master",null,null,null, $"updategithub {batonName}", null )}
+                Buttons = actions
             };
 
             return heroCard;

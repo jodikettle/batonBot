@@ -64,7 +64,8 @@ namespace SharedBaton.CommandHandlers
                         DateRequested = DateTime.Now, 
                         DateReceived = DateTime.Now,
                         Conversation = conversationReference,
-                        Comment = comment
+                        Comment = comment,
+                        PullRequestNumber = pullRequest
                     });
 
                     this.SendItsAllYours(turnContext, cancellationToken);

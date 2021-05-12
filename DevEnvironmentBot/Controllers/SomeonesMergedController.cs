@@ -57,21 +57,47 @@ namespace DevEnvironmentBot.Controllers
 
                 if (batonHolder != null)
                 {
-                    var attachments = new List<Attachment>();
-                    var reply = MessageFactory.Attachment(attachments);
-                    reply.Attachments.Add(
-                        Card.GetUpdateYourBranchCard(batonName)
-                            .ToAttachment());
+                    var repoName = getRepoName(batonName);
 
-                    await ((BotAdapter)_adapter).ContinueConversationAsync(
-                        _appId,
-                        batonHolder.Conversation,
-                        async (context, token) =>
-                            await BotCallback(reply, context, token),
-                        default(CancellationToken));
+                    if (!string.IsNullOrEmpty(repoName))
+                    {
+                        var attachments = new List<Attachment>();
+                        var reply = MessageFactory.Attachment(attachments);
+                        reply.Attachments.Add(
+                            Card.GetUpdateYourBranchCard(batonName, repoName, batonHolder.PullRequestNumber)
+                                .ToAttachment());
+
+                        await ((BotAdapter)_adapter).ContinueConversationAsync(
+                            _appId,
+                            batonHolder.Conversation,
+                            async (context, token) =>
+                                await BotCallback(reply, context, token),
+                            default(CancellationToken));
+                    }
                 }
             }
         }
+
+        private string getRepoName(string type)
+        {
+            if (type == "be")
+            {
+                return  "maraschino";
+            }
+
+            if (type == "fe")
+            {
+                return "ADA-Research-UI";
+            }
+
+            if (type == "man")
+            {
+                return "ADA-Research-Configuration";
+            }
+
+            return null;
+        }
+
         private async Task BotCallback(IMessageActivity message, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             // If you encounter permission-related errors when sending this message, see
