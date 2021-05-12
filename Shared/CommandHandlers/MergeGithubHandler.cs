@@ -9,18 +9,18 @@
     using System.Threading.Tasks;
     using SharedBaton.Firebase;
 
-    public class UpdateGithubHandler : IGithubUpdateHandler {
+    public class MergeGithubHandler : IGithubMergeHandler {
 
         private readonly IGitHubService gitHubService;
         private readonly IFirebaseService service;
 
-        public UpdateGithubHandler(IGitHubService gitHubService, IFirebaseService service)
+        public MergeGithubHandler(IGitHubService gitHubService, IFirebaseService service)
         {
             this.gitHubService = gitHubService;
             this.service = service;
         }
 
-        public async Task Handler(string type, int pr, string appId, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        public async Task Handler(string type, int prNumber, string appId, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var batons = service.GetQueue().GetAwaiter().GetResult();
             var batonFireObject = batons?.FirstOrDefault(x => x.Object.Name.Equals(type));

@@ -6,6 +6,8 @@
     {
         public int number;
 
+        public string title;
+
         public string body;
 
         public bool merged;

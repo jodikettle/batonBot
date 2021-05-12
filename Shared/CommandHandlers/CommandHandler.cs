@@ -20,11 +20,12 @@ namespace SharedBaton.CommandHandlers
         private readonly IMoveMeCommandHandler moveMeHandler;
         private readonly IShowCommandHandler showHandler;
         private readonly IGithubUpdateHandler githubUpdateHandler;
+        private readonly IGithubMergeHandler githubMergeHandler;
         private readonly IConfiguration config;
 
         public CommandHandler(IFirebaseService client, ICardCreator cardCreator, IBatonService batonService,
             ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IAdminReleaseCommandHandler adminReleaseCommandHandler, IShowCommandHandler showCommandHandler, IMoveMeCommandHandler moveMeCommandHandler,
-            IGithubUpdateHandler githubUpdateHandler, IConfiguration config)
+            IGithubUpdateHandler githubUpdateHandler, IGithubMergeHandler githubMergeHandler, IConfiguration config)
         {
             this.batons = batonService;
             this.takeHandler = takeCommandHandler;
@@ -33,6 +34,7 @@ namespace SharedBaton.CommandHandlers
             this.adminReleaseHandler = adminReleaseCommandHandler;
             this.moveMeHandler = moveMeCommandHandler;
             this.githubUpdateHandler = githubUpdateHandler;
+            this.githubMergeHandler = githubMergeHandler;
             this.config = config;
         }
 
@@ -111,7 +113,19 @@ namespace SharedBaton.CommandHandlers
             }
             else if (command.Equals("updategithub"))
             {
-                await this.githubUpdateHandler.Handler(batonType.Shortname, appId, turnContext, cancellationToken);
+                var pr = text.Replace(command + " ", "").Replace(type, "").Trim();
+                int prNumber = 0;
+                int.TryParse(pr, out prNumber);
+
+                await this.githubUpdateHandler.Handler(batonType.Shortname, prNumber, appId, turnContext, cancellationToken);
+            }
+            else if (command.Equals("mergegithub"))
+            {
+                var pr = text.Replace(command + " ", "").Replace(type, "").Trim();
+                int prNumber = 0;
+                int.TryParse(pr, out prNumber);
+
+                await this.githubMergeHandler.Handler(batonType.Shortname, prNumber, appId, turnContext, cancellationToken);
             }
             else
             {

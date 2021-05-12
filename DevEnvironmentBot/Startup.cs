@@ -60,6 +60,7 @@ namespace DevEnvironmentBot
             services.AddSingleton<IAdminReleaseCommandHandler, AdminReleaseCommandHandler>();
             services.AddSingleton<IMoveMeCommandHandler, MoveMeCommandHandler>();
             services.AddSingleton<IGithubUpdateHandler, UpdateGithubHandler>();
+            services.AddSingleton<IGithubMergeHandler, MergeGithubHandler>();
             services.AddSingleton<IGitHubService, GitHubService>();
             services.AddSingleton<IFirebaseLogger, FirebaseLogger>();
         }

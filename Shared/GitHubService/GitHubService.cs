@@ -1,5 +1,6 @@
 ﻿namespace SharedBaton.GitHubService
 {
+    using System;
     using System.Net;
     using System.Threading.Tasks;
     using Flurl;
@@ -92,17 +93,38 @@
             }
         }
 
-        public async Task<bool> UpdatePullRequest(string repo, int prNumber)
+        public async Task<ServiceResult> UpdatePullRequest(string repo, int prNumber)
         {
-            var result = await this.gitHubApiUrl
-                .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/update-branch")
-                .WithHeaders(new {
-                    Accept = "application/vnd.github.lydian-preview+json",
-                    Authorization = $"token {gitHubAccessToken}"
-                })
-                .PutAsync();
+            var pr = await this.getPRInfo(repo, prNumber);
 
-            return result.StatusCode == 202;
+            if (pr.mergable_state == "behind")
+            {
+                var result = await this.gitHubApiUrl
+                    .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/update-branch")
+                    .WithHeaders(
+                        new
+                        {
+                            Accept = "application/vnd.github.lydian-preview+json",
+                            Authorization = $"token {gitHubAccessToken}"
+                        })
+                    .PutAsync();
+
+                return result.StatusCode == 202
+                    ? new ServiceResult()
+                    {
+                        Succeeded = true
+                    }
+                    : new ServiceResult()
+                    {
+                        Succeeded = false,
+                        ReasonForFailure = result.ResponseMessage.ToString()
+                    };
+            }
+            return new ServiceResult()
+            {
+                Succeeded = false,
+                ReasonForFailure = "Not Needed"
+            };
         }
     }
 }

@@ -5,7 +5,7 @@
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Schema;
 
-    public interface IGithubUpdateHandler
+    public interface IGithubMergeHandler
     {
         Task Handler(string type, int prNumber, string appId, ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken);
