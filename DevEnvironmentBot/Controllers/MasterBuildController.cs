@@ -53,7 +53,7 @@ namespace DevEnvironmentBot.Controllers
 
             if (queue != null && queue.Count > 1)
             {
-                var batonHolder = queue.Skip(1).FirstOrDefault();
+                var batonHolder = queue.FirstOrDefault();
 
                 if (batonHolder != null)
                 {
