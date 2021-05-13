@@ -56,21 +56,21 @@
 
                 if (!string.IsNullOrEmpty(repo))
                 {
-                    var result = await this.gitHubService.UpdatePullRequest(repo, batonPrRequest.PullRequestNumber);
+                    var result = await this.gitHubService.MergePullRequest(repo, batonPrRequest.PullRequestNumber);
 
                     if (result.Succeeded)
                     {
-                        var reply = MessageFactory.Text($"Im Updating that for you");
+                        var reply = MessageFactory.Text($"Thats been merged");
                         _ = await turnContext.SendActivityAsync(reply, cancellationToken);
                     }
-                    else if (result.ReasonForFailure == "Not Needed")
+                    else if (result.ReasonForFailure == "No clue")
                     {
-                        var reply = MessageFactory.Text($"Its not required to update this branch at this time.");
+                        var reply = MessageFactory.Text($"Something went wrong no idea what");
                         _ = await turnContext.SendActivityAsync(reply, cancellationToken);
                     }
                     else
                     {
-                        var reply = MessageFactory.Text($"That didn't work out can you update it on the link");
+                        var reply = MessageFactory.Text($"Somethign went wrong - {result.ReasonForFailure}");
                         _ = await turnContext.SendActivityAsync(reply, cancellationToken);
                     }
                 }

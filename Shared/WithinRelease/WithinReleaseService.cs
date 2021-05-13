@@ -35,21 +35,9 @@
 
             var info = await this.service.getPRInfo(repoName, baton.PullRequestNumber);
 
-            var reply4 = MessageFactory.Text($"{info == null}");
-            _ = await turnContext.SendActivityAsync(reply4, cancellationToken);
-
-            var reply1 = MessageFactory.Text($"{info.mergeable_state}");
-            _ = await turnContext.SendActivityAsync(reply1, cancellationToken);
-
-            var reply3 = MessageFactory.Text($"{info.title}");
-            _ = await turnContext.SendActivityAsync(reply3, cancellationToken);
-
-            var reply2 = MessageFactory.Text($"{info.GetMergeDecriptionString()}");
-            _ = await turnContext.SendActivityAsync(reply2, cancellationToken);
-
             if (info.mergeable_state == "blocked")
             {
-                var reply = MessageFactory.Text($"Its not ready to go. Do you have enough reviews?");
+                var reply = MessageFactory.Text($"### Its not ready to go. Do you have enough reviews?");
                 _ = await turnContext.SendActivityAsync(reply, cancellationToken);
             }
             else if (info.mergeable_state == "behind")

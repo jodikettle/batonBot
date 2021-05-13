@@ -62,7 +62,7 @@
 
             return null;
         }
-        public async Task<bool> MergePullRequest(string repo, int prNumber)
+        public async Task<ServiceResult> MergePullRequest(string repo, int prNumber)
         {
             //Get Pull Request 
             var pr = await this.getPRInfo(repo, prNumber);
@@ -85,11 +85,24 @@
                             merge_method = "squash"
                         });
 
-                return result.StatusCode == 200;
+                return result.StatusCode == 200
+                    ? new ServiceResult()
+                    {
+                        Succeeded = true
+                    }
+                    : new ServiceResult()
+                    {
+                        Succeeded = false,
+                        ReasonForFailure = result.ResponseMessage.ToString()
+                    };
             }
             else
             {
-                return false;
+                return new ServiceResult()
+                {
+                    Succeeded = false,
+                    ReasonForFailure = "No clue"
+                };
             }
         }
 
