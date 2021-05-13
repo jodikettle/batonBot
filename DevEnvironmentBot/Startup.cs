@@ -64,6 +64,7 @@ namespace DevEnvironmentBot
             services.AddSingleton<IGithubMergeHandler, MergeGithubHandler>();
             services.AddSingleton<IGitHubService, GitHubService>();
             services.AddSingleton<IWithinReleaseService, WithinReleaseService>();
+            services.AddSingleton<ICloseTicketCommandHandler, CloseTicketCommandHandler>();
             services.AddSingleton<IFirebaseLogger, FirebaseLogger>();
         }
 

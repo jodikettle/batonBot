@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using SharedBaton.Firebase;
 using SharedBaton.Interfaces;
 using SharedBaton.Models;
-using DevEnvironmentBot.Cards;
 
 namespace SharedBaton.CommandHandlers
 {
@@ -61,8 +60,22 @@ namespace SharedBaton.CommandHandlers
                     type, name, oldBatonRequest.DateRequested, oldBatonRequest.DateReceived, DateTime.Now,
                     oldBatonRequest.MoveMeCount, false);
 
-                var activity = MessageFactory.Text(this.releaseMessageText.Replace("{type}", type));
-                await turnContext.SendActivityAsync(activity, cancellationToken);
+                if (oldBatonRequest.PullRequestNumber > 0)
+                {
+                    var reply = MessageFactory.Attachment(new List<Attachment>());
+                    reply.Attachments.Add(
+                        DevEnvironmentBot.Cards.Card.DoYouWantToCloseTheTicket(
+                                type, GetRepo(type), oldBatonRequest.PullRequestNumber)
+                            .ToAttachment());
+
+                    await turnContext.SendActivityAsync(reply, cancellationToken);
+                }
+                else
+                {
+                    var activity = MessageFactory.Text(this.releaseMessageText.Replace("{type}", type));
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+
+                }
             }
             else
             {
@@ -105,32 +118,30 @@ namespace SharedBaton.CommandHandlers
             }
         }
 
+        private string GetRepo(string batonName)
+        {
+            var repo = batonName switch
+            {
+                "be" => "maraschino",
+                "fe" => "ADA-Research-UI",
+                "man" => "ADA-Research-Configuration",
+                _ => string.Empty
+            };
+
+            return repo;
+        }
+
         private async Task SendButtonsForMergeIfApplicable(BatonRequest batonRequest, string appId, ITurnContext<IMessageActivity> turnContext)
         {
             var attachments = new List<Attachment>();
             var reply = MessageFactory.Attachment(attachments);
 
-            var repo = string.Empty;
-
-            if (batonRequest.BatonName == "be")
-            {
-                repo = "maraschino";
-            }
-
-            if (batonRequest.BatonName == "fe")
-            {
-                repo = "ADA-Research-UI";
-            }
-
-            if (batonRequest.BatonName == "man")
-            {
-                repo = "ADA-Research-Configuration";
-            }
+            var repo = GetRepo(batonRequest.BatonName);
 
             if (!string.IsNullOrEmpty(repo) && batonRequest.PullRequestNumber > 0)
             {
                 //reply.Attachments.Add(
-                //    DevEnvironmentBot.Cards.Card(
+                //    DevEnvironmentBot.Cards.Card.SquashAndMergeCard(
                 //            batonRequest.BatonName, repo, batonRequest.PullRequestNumber)
                 //        .ToAttachment());
 

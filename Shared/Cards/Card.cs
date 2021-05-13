@@ -51,14 +51,14 @@ namespace DevEnvironmentBot.Cards
             return adaptiveCardAttachment;
         }
 
-        public static HeroCard GetUpdateYourBranchCard(string batonName, string reponame, int prNumber)
+        public static HeroCard GetUpdateYourBranchCard(string batonName, string repoName, int prNumber)
         {
             List<CardAction> actions = null;
             if (prNumber> 0 )
             {
                 actions = new List<CardAction>
                 {
-                    new CardAction(ActionTypes.OpenUrl, "Open Pull Request", value: $"https://github.com/Redington/{reponame}/pull/{prNumber}"),
+                    new CardAction(ActionTypes.OpenUrl, "Open Pull Request", value: $"https://github.com/Redington/{repoName}/pull/{prNumber}"),
                     new CardAction(
                         ActionTypes.ImBack, "Update Branch With Master", null, null, null, $"updategithub {batonName} {prNumber}", null)
                 };
@@ -74,14 +74,14 @@ namespace DevEnvironmentBot.Cards
             return heroCard;
         }
 
-        public static HeroCard SquashAndMergeCard(string batonName, string reponame, int prNumber)
+        public static HeroCard SquashAndMergeCard(string batonName, string repoName, int prNumber)
         {
             List<CardAction> actions = null;
             if (prNumber > 0)
             {
                 actions = new List<CardAction>
                 {
-                    new CardAction(ActionTypes.OpenUrl, "Open Pull Request", value: $"https://github.com/Redington/{reponame}/pull/{prNumber}"),
+                    new CardAction(ActionTypes.OpenUrl, "Open Pull Request", value: $"https://github.com/Redington/{repoName}/pull/{prNumber}"),
                     new CardAction(
                         ActionTypes.ImBack, "Squash And Merge", null, null, null, $"mergegithub {batonName} {prNumber}", null)
                 };
@@ -90,6 +90,27 @@ namespace DevEnvironmentBot.Cards
             var heroCard = new HeroCard
             {
                 Title = $"You can merge it here",
+                Buttons = actions
+            };
+
+            return heroCard;
+        }
+
+        public static HeroCard DoYouWantToCloseTheTicket(string batonName, string repoName, int prNumber)
+        {
+            List<CardAction> actions = null;
+            if (prNumber > 0)
+            {
+                actions = new List<CardAction>
+                {
+                    new CardAction(
+                        ActionTypes.ImBack, "Close Ticket", null, null, null, $"closeticket {batonName} {prNumber}", null)
+                };
+            }
+
+            var heroCard = new HeroCard
+            {
+                Title = $"Do you want to close your ticket?",
                 Buttons = actions
             };
 
