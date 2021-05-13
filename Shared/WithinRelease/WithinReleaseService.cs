@@ -35,6 +35,9 @@
 
             var info = await this.service.getPRInfo(repoName, baton.PullRequestNumber);
 
+            var reply1 = MessageFactory.Text($"{info.mergable_state}");
+            _ = await turnContext.SendActivityAsync(reply1, cancellationToken);
+
             if (info.mergable_state == "blocked")
             {
                 var reply = MessageFactory.Text($"Its not ready to go. Do you have enough reviews?");
