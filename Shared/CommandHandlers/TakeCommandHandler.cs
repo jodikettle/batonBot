@@ -80,7 +80,7 @@ namespace SharedBaton.CommandHandlers
                 else
                 {
                     batonFireObject.Object.Queue.Enqueue(new BatonRequest()
-                    { UserName = name, UserId = conversationReference.User.Id, BatonName = type, DateRequested = DateTime.Now, Conversation = conversationReference, Comment = comment });
+                    { UserName = name, UserId = conversationReference.User.Id, BatonName = type, DateRequested = DateTime.Now, Conversation = conversationReference, Comment = comment, PullRequestNumber = pullRequest });
 
                     await this.SendAddedToTheQueue(turnContext, cancellationToken);
                 }
