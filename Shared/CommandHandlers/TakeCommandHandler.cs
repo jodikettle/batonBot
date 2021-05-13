@@ -74,6 +74,8 @@ namespace SharedBaton.CommandHandlers
 
                     batonFireObject.Object.Queue.Enqueue(baton);
 
+                    await service.UpdateQueue(batonFireObject);
+
                     this.SendItsAllYours(turnContext, cancellationToken);
                     await this.releaseService.GotBaton(baton, turnContext, cancellationToken);
                 }
@@ -82,13 +84,12 @@ namespace SharedBaton.CommandHandlers
                     batonFireObject.Object.Queue.Enqueue(new BatonRequest()
                     { UserName = name, UserId = conversationReference.User.Id, BatonName = type, DateRequested = DateTime.Now, Conversation = conversationReference, Comment = comment, PullRequestNumber = pullRequest });
 
-                    await this.SendAddedToTheQueue(turnContext, cancellationToken);
+                    await service.UpdateQueue(batonFireObject);
 
+                    await this.SendAddedToTheQueue(turnContext, cancellationToken);
                     //TODO - just use the queue you have
                     await showBatonService.SendBatons(turnContext, cancellationToken);
                 }
-
-                await service.UpdateQueue(batonFireObject);
             }
         }
 
