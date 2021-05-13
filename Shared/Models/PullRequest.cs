@@ -12,7 +12,7 @@
 
         public bool merged;
 
-        public string mergable_state;
+        public string mergeable_state;
 
         public HeadInfo head;
 

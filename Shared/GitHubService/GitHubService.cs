@@ -67,7 +67,7 @@
             //Get Pull Request 
             var pr = await this.getPRInfo(repo, prNumber);
 
-            if (pr.mergable_state != "blocked" && pr.merged)
+            if (pr.mergeable_state != "blocked" && pr.merged)
             {
 
                 var result = await this.gitHubApiUrl
@@ -97,7 +97,7 @@
         {
             var pr = await this.getPRInfo(repo, prNumber);
 
-            if (pr.mergable_state == "behind")
+            if (pr.mergeable_state == "behind")
             {
                 var result = await this.gitHubApiUrl
                     .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/update-branch")
