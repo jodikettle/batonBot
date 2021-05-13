@@ -74,7 +74,7 @@ namespace DevEnvironmentBot.Cards
             return heroCard;
         }
 
-        public static HeroCard ItsYourTurnWithTheBatonCard(string batonName, string reponame, int prNumber)
+        public static HeroCard SquashAndMergeCard(string batonName, string reponame, int prNumber)
         {
             List<CardAction> actions = null;
             if (prNumber > 0)
@@ -89,7 +89,7 @@ namespace DevEnvironmentBot.Cards
 
             var heroCard = new HeroCard
             {
-                Title = $"Do you want to merge it here",
+                Title = $"You can merge it here",
                 Buttons = actions
             };
 

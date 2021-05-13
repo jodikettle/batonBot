@@ -21,7 +21,8 @@ namespace DevEnvironmentBot.Controllers
         [HttpGet("{prNumber}")]
         public async Task<PullRequest> Get(int prNumber)
         {
-            return await this.service.getPRInfo("ADA-Research-UI", prNumber);
+            var test =  await this.service.getPRInfo("ADA-Research-UI", prNumber);
+            return test;
         }
 
         [HttpGet("Test")]

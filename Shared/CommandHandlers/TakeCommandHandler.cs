@@ -13,15 +13,19 @@ using SharedBaton.Models;
 
 namespace SharedBaton.CommandHandlers
 {
+    using SharedBaton.Interfaces;
+
     public class TakeCommandHandler: ITakeCommandHandler
     {
         private readonly IFirebaseService service;
         private readonly GetAndDisplayBatonService showBatonService;
+        private readonly IWithinReleaseService releaseService;
 
-        public TakeCommandHandler(IFirebaseService firebaseService, ICardCreator cardBuilder)
+        public TakeCommandHandler(IFirebaseService firebaseService, ICardCreator cardBuilder, IWithinReleaseService releaseService)
         {
             this.service = firebaseService;
             this.showBatonService = new GetAndDisplayBatonService(firebaseService, cardBuilder);
+            this.releaseService = releaseService;
         }
         public async Task Handler(string type, string comment, int pullRequest, ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
@@ -56,19 +60,22 @@ namespace SharedBaton.CommandHandlers
             {
                 if (batonFireObject.Object.Queue.Count == 0)
                 {
-                    batonFireObject.Object.Queue.Enqueue(new BatonRequest()
-                    {
-                        UserName = name, 
-                        UserId = conversationReference.User.Id, 
-                        BatonName = type, 
-                        DateRequested = DateTime.Now, 
-                        DateReceived = DateTime.Now,
-                        Conversation = conversationReference,
-                        Comment = comment,
-                        PullRequestNumber = pullRequest
-                    });
+                    var baton = new BatonRequest()
+                        {
+                            UserName = name,
+                            UserId = conversationReference.User.Id,
+                            BatonName = type,
+                            DateRequested = DateTime.Now,
+                            DateReceived = DateTime.Now,
+                            Conversation = conversationReference,
+                            Comment = comment,
+                            PullRequestNumber = pullRequest
+                        };
+
+                    batonFireObject.Object.Queue.Enqueue(baton);
 
                     this.SendItsAllYours(turnContext, cancellationToken);
+                    await this.releaseService.GotBaton(baton, turnContext, cancellationToken);
                 }
                 else
                 {

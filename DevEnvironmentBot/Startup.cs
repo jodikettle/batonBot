@@ -24,6 +24,7 @@ using SharedBaton.Interfaces;
 namespace DevEnvironmentBot
 {
     using SharedBaton.GitHubService;
+    using SharedBaton.WithinRelease;
 
     public class Startup
     {
@@ -62,6 +63,7 @@ namespace DevEnvironmentBot
             services.AddSingleton<IGithubUpdateHandler, UpdateGithubHandler>();
             services.AddSingleton<IGithubMergeHandler, MergeGithubHandler>();
             services.AddSingleton<IGitHubService, GitHubService>();
+            services.AddSingleton<IWithinReleaseService, WithinReleaseService>();
             services.AddSingleton<IFirebaseLogger, FirebaseLogger>();
         }
 

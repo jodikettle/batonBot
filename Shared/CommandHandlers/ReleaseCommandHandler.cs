@@ -129,14 +129,14 @@ namespace SharedBaton.CommandHandlers
 
             if (!string.IsNullOrEmpty(repo) && batonRequest.PullRequestNumber > 0)
             {
-                reply.Attachments.Add(
-                    DevEnvironmentBot.Cards.Card.ItsYourTurnWithTheBatonCard(
-                            batonRequest.BatonName, repo, batonRequest.PullRequestNumber)
-                        .ToAttachment());
+                //reply.Attachments.Add(
+                //    DevEnvironmentBot.Cards.Card(
+                //            batonRequest.BatonName, repo, batonRequest.PullRequestNumber)
+                //        .ToAttachment());
 
-                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
-                    appId, batonRequest.Conversation, async (context, token) =>
-                        await this.BotCallback(reply, context, token), default(CancellationToken));
+                //await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+                //    appId, batonRequest.Conversation, async (context, token) =>
+                //        await this.BotCallback(reply, context, token), default(CancellationToken));
             }
         }
 
