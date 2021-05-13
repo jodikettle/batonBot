@@ -83,13 +83,12 @@ namespace SharedBaton.CommandHandlers
                     { UserName = name, UserId = conversationReference.User.Id, BatonName = type, DateRequested = DateTime.Now, Conversation = conversationReference, Comment = comment, PullRequestNumber = pullRequest });
 
                     await this.SendAddedToTheQueue(turnContext, cancellationToken);
+
+                    //TODO - just use the queue you have
+                    await showBatonService.SendBatons(turnContext, cancellationToken);
                 }
 
                 await service.UpdateQueue(batonFireObject);
-
-
-                //////TODO - just use the queue you have
-                await showBatonService.SendBatons(turnContext, cancellationToken);
             }
         }
 

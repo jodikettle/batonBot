@@ -95,7 +95,8 @@
                         {
                             commit_title = pr.title,
                             commit_message = pr.GetMergeDecriptionString(),
-                            merge_method = "squash"
+                            merge_method = "squash",
+                            User_Agent = "BatonBot"
                         });
 
                 return result.StatusCode == 200
@@ -128,7 +129,8 @@
                         new
                         {
                             Accept = "application/vnd.github.lydian-preview+json",
-                            Authorization = $"token {gitHubAccessToken}"
+                            Authorization = $"token {gitHubAccessToken}",
+                            User_Agent = "BatonBot"
                         })
                     .PutAsync();
 

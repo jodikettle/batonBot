@@ -20,13 +20,15 @@ namespace SharedBaton.CommandHandlers
         private readonly string releaseMessageText;
         private readonly IConfiguration config;
         private readonly IFirebaseLogger logger;
+        private readonly IWithinReleaseService releaseService;
 
-        public ReleaseCommandHandler(IFirebaseService firebaseClient, IConfiguration config, IFirebaseLogger logger)
+        public ReleaseCommandHandler(IFirebaseService firebaseClient, IConfiguration config, IWithinReleaseService releaseService, IFirebaseLogger logger)
         {
             this.service = firebaseClient;
             this.config = config;
             this.releaseMessageText = config["ReleaseBatonText"];
             this.logger = logger;
+            this.releaseService = releaseService;
         }
 
         public async Task Handler(string type, string appId, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -114,7 +116,7 @@ namespace SharedBaton.CommandHandlers
                 await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, batonRequest.Conversation, async (context, token) =>
                     await SendYourBatonMessage(batonRequest.BatonName, context, token), default(CancellationToken));
 
-                await this.SendButtonsForMergeIfApplicable(batonRequest, appId, turnContext);
+                await this.releaseService.GotBaton(batonRequest, turnContext, default(CancellationToken));
             }
         }
 
@@ -129,26 +131,6 @@ namespace SharedBaton.CommandHandlers
             };
 
             return repo;
-        }
-
-        private async Task SendButtonsForMergeIfApplicable(BatonRequest batonRequest, string appId, ITurnContext<IMessageActivity> turnContext)
-        {
-            var attachments = new List<Attachment>();
-            var reply = MessageFactory.Attachment(attachments);
-
-            var repo = GetRepo(batonRequest.BatonName);
-
-            if (!string.IsNullOrEmpty(repo) && batonRequest.PullRequestNumber > 0)
-            {
-                //reply.Attachments.Add(
-                //    DevEnvironmentBot.Cards.Card.SquashAndMergeCard(
-                //            batonRequest.BatonName, repo, batonRequest.PullRequestNumber)
-                //        .ToAttachment());
-
-                //await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
-                //    appId, batonRequest.Conversation, async (context, token) =>
-                //        await this.BotCallback(reply, context, token), default(CancellationToken));
-            }
         }
 
         private async Task SendYourBatonMessage(string name, ITurnContext turnContext, CancellationToken cancellationToken)
