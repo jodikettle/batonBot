@@ -65,7 +65,7 @@ namespace DevEnvironmentBot.Controllers
                             _appId,
                             batonHolder.Conversation,
                             async (context, token) =>
-                                await BotCallback("Build was successful time to deploy", context, token),
+                                await BotCallback( $"Build was successful time to deploy for {batonName}", context, token),
                             default(CancellationToken));
                     }
                 }

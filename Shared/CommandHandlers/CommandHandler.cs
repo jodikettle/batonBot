@@ -22,11 +22,12 @@ namespace SharedBaton.CommandHandlers
         private readonly IGithubUpdateHandler githubUpdateHandler;
         private readonly IGithubMergeHandler githubMergeHandler;
         private readonly ICloseTicketCommandHandler closeTicketHandler;
+        private readonly ITryAgainCommandHandler tryAgainHandler;
         private readonly IConfiguration config;
 
         public CommandHandler(IFirebaseService client, ICardCreator cardCreator, IBatonService batonService,
             ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IAdminReleaseCommandHandler adminReleaseCommandHandler, IShowCommandHandler showCommandHandler, IMoveMeCommandHandler moveMeCommandHandler, IGithubUpdateHandler githubUpdateHandler, IGithubMergeHandler githubMergeHandler,
-            ICloseTicketCommandHandler closeTicketHandler, IConfiguration config)
+            ICloseTicketCommandHandler closeTicketHandler, ITryAgainCommandHandler tryAgainHandler, IConfiguration config)
         {
             this.batons = batonService;
             this.takeHandler = takeCommandHandler;
@@ -37,6 +38,7 @@ namespace SharedBaton.CommandHandlers
             this.githubUpdateHandler = githubUpdateHandler;
             this.githubMergeHandler = githubMergeHandler;
             this.closeTicketHandler = closeTicketHandler;
+            this.tryAgainHandler = tryAgainHandler;
             this.config = config;
         }
 
@@ -93,6 +95,10 @@ namespace SharedBaton.CommandHandlers
             else if (command.Equals("release"))
             {
                 await this.releaseHandler.Handler(batonType.Shortname, appId, turnContext, cancellationToken);
+            }
+            else if (command.Equals("tryagain"))
+            {
+                await this.tryAgainHandler.Handler(batonType.Shortname, appId, turnContext, cancellationToken);
             }
             else if (command.Equals("take"))
             {

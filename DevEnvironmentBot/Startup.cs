@@ -65,6 +65,7 @@ namespace DevEnvironmentBot
             services.AddSingleton<IGitHubService, GitHubService>();
             services.AddSingleton<IWithinReleaseService, WithinReleaseService>();
             services.AddSingleton<ICloseTicketCommandHandler, CloseTicketCommandHandler>();
+            services.AddSingleton<ITryAgainCommandHandler, TryAgainCommandHandler>();
             services.AddSingleton<IFirebaseLogger, FirebaseLogger>();
         }
 
