@@ -102,7 +102,7 @@
             //Get Pull Request 
             var pr = await this.GetPRInfo(repo, prNumber);
 
-            if (pr.mergeable_state != "blocked" && pr.merged)
+            if (pr.mergeable_state != "blocked" && !pr.merged)
             {
 
                 var result = await this.gitHubApiUrl
