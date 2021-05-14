@@ -11,6 +11,8 @@ using SharedBaton.Interfaces;
 
 namespace DevEnvironmentBot.Cards
 {
+    using SharedBaton.GitHubService;
+
     public class Card : ICardCreator
     {
         private readonly IBatonService batonList;
@@ -96,21 +98,27 @@ namespace DevEnvironmentBot.Cards
             return heroCard;
         }
 
-        public static HeroCard DoYouWantToCloseTheTicket(string batonName, string repoName, int prNumber)
+        public static HeroCard DoYouWantToCloseTheTicket(string batonName, string repoName, int prNumber, IGitHubService service)
         {
             List<CardAction> actions = null;
-            if (prNumber > 0)
+            var ticketId = service.GetTicketId(repoName, prNumber);
+
+            if (prNumber == 0)
             {
-                actions = new List<CardAction>
-                {
-                    new CardAction(
-                        ActionTypes.ImBack, "Close Ticket", null, null, null, $"closeticket {batonName} {prNumber}", null)
-                };
+                return null;
             }
+
+            actions = new List<CardAction>
+            {                    
+                new CardAction(
+                    ActionTypes.OpenUrl, "View Ticket", value: $"https://github.com/Redington/ada/issues/{ticketId}"),
+                new CardAction(
+                    ActionTypes.ImBack, "Close Ticket", null, null, null, $"closeticket {batonName} {prNumber}", null)
+            };
 
             var heroCard = new HeroCard
             {
-                Title = $"Do you want to close your ticket?",
+                Title = $"Do you want to close your ticket linked to Pr:{prNumber} num: {ticketId}?",
                 Buttons = actions
             };
 

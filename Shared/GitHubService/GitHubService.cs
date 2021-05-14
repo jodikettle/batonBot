@@ -14,6 +14,7 @@
     public class GitHubService : IGitHubService
     {
         private readonly string gitHubApiUrl;
+
         private readonly string gitHubAccessToken;
 
         public GitHubService(IConfiguration config)
@@ -28,12 +29,13 @@
             {
                 return false;
             }
+
             if (prNumber < 1)
             {
                 return false;
             }
 
-            var pr = await this.getPRInfo(repo, prNumber);
+            var pr = await this.GetPRInfo(repo, prNumber);
 
             var resultString = Regex.Match(pr.head.reference, @"\d+").Value;
             int.TryParse(resultString, out int issueResult);
@@ -65,7 +67,27 @@
             }
         }
 
-        public async Task<PullRequest> getPRInfo(string repo, int prNumber)
+        public async Task<int> GetTicketId(string repo, int prNumber)
+        {
+            if (string.IsNullOrEmpty(repo))
+            {
+                return 0;
+            }
+
+            if (prNumber < 1)
+            {
+                return 0;
+            }
+
+            var pr = await this.GetPRInfo(repo, prNumber);
+
+            var resultString = Regex.Match(pr.head.reference, @"\d+").Value;
+            int.TryParse(resultString, out int issueResult);
+
+            return issueResult;
+        }
+
+        public async Task<PullRequest> GetPRInfo(string repo, int prNumber)
         {
             // GET / repos /{ owner}/{ repo}/ pulls /{ pull_number}
             var client = new RestClient($"https://api.github.com/repos/redington/{repo}/pulls/{prNumber}");
@@ -78,7 +100,7 @@
         public async Task<ServiceResult> MergePullRequest(string repo, int prNumber)
         {
             //Get Pull Request 
-            var pr = await this.getPRInfo(repo, prNumber);
+            var pr = await this.GetPRInfo(repo, prNumber);
 
             if (pr.mergeable_state != "blocked" && pr.merged)
             {
@@ -119,37 +141,38 @@
 
         public async Task<ServiceResult> UpdatePullRequest(string repo, int prNumber)
         {
-            var pr = await this.getPRInfo(repo, prNumber);
+            var pr = await this.GetPRInfo(repo, prNumber);
 
-            if (pr.mergeable_state == "behind")
+            if (pr.mergeable_state != "behind")
             {
-                var result = await this.gitHubApiUrl
-                    .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/update-branch")
-                    .WithHeaders(
-                        new
-                        {
-                            Accept = "application/vnd.github.lydian-preview+json",
-                            Authorization = $"token {gitHubAccessToken}",
-                            User_Agent = "BatonBot"
-                        })
-                    .PutAsync();
-
-                return result.StatusCode == 202
-                    ? new ServiceResult()
-                    {
-                        Succeeded = true
-                    }
-                    : new ServiceResult()
-                    {
-                        Succeeded = false,
-                        ReasonForFailure = result.ResponseMessage.ToString()
-                    };
+                return new ServiceResult()
+                {
+                    Succeeded = false,
+                    ReasonForFailure = "Not Needed"
+                };
             }
-            return new ServiceResult()
-            {
-                Succeeded = false,
-                ReasonForFailure = "Not Needed"
-            };
+
+            var result = await this.gitHubApiUrl
+                .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/update-branch")
+                .WithHeaders(
+                    new
+                    {
+                        Accept = "application/vnd.github.lydian-preview+json",
+                        Authorization = $"token {this.gitHubAccessToken}",
+                        User_Agent = "BatonBot"
+                    })
+                .PutAsync();
+
+            return result.StatusCode == 202
+                ? new ServiceResult()
+                {
+                    Succeeded = true
+                }
+                : new ServiceResult()
+                {
+                    Succeeded = false,
+                    ReasonForFailure = result.ResponseMessage.ToString()
+                };
         }
     }
 }

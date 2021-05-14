@@ -21,6 +21,9 @@
 
         public async Task GotBaton(BatonRequest baton, string appId, bool notify, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
+            await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, baton.Conversation, async (context, token) =>
+                await SendYourBatonMessage(baton.BatonName, baton.PullRequestNumber, "Test", context, token), default(CancellationToken));
+
             if (baton.PullRequestNumber == 0)
             {
                 return;
@@ -33,7 +36,11 @@
                 return;
             }
 
-            var info = await this.service.getPRInfo(repoName, baton.PullRequestNumber);
+            var info = await this.service.GetPRInfo(repoName, baton.PullRequestNumber);
+
+            await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, baton.Conversation, async (context, token) =>
+                await SendYourBatonMessage(baton.BatonName, baton.PullRequestNumber, repoName, context, token), default(CancellationToken));
+
 
             if (info.mergeable_state == "blocked")
             {
@@ -108,6 +115,13 @@
                 repo = "ADA-Research-Configuration";
             }
             return repo;
+        }
+
+        private async Task SendYourBatonMessage(string name, int PrNumber, string repoName, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            // If you encounter permission-related errors when sending this message, see
+            // https://aka.ms/BotTrustServiceUrl
+            await turnContext.SendActivityAsync($"Hey! its your turn with the {name} baton for PR {PrNumber} going to {repoName}");
         }
     }
 }

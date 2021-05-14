@@ -8,6 +8,8 @@
          Task<ServiceResult> UpdatePullRequest(string repo, int prNumber);
          Task<ServiceResult> MergePullRequest(string repo, int issueNumber);
          Task<bool> CloseTicket(string repo, int issueNumber);
-         Task<PullRequest> getPRInfo(string repo, int prNumber);
+         Task<PullRequest> GetPRInfo(string repo, int prNumber);
+
+         Task<int> GetTicketId(string repo, int prNumber);
     }
 }

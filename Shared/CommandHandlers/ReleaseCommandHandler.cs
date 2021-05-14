@@ -14,6 +14,8 @@ using SharedBaton.Models;
 
 namespace SharedBaton.CommandHandlers
 {
+    using SharedBaton.GitHubService;
+
     public class ReleaseCommandHandler : IReleaseCommandHandler
     {
         private readonly IFirebaseService service;
@@ -21,14 +23,16 @@ namespace SharedBaton.CommandHandlers
         private readonly IConfiguration config;
         private readonly IFirebaseLogger logger;
         private readonly IWithinReleaseService releaseService;
+        private readonly IGitHubService githubService;
 
-        public ReleaseCommandHandler(IFirebaseService firebaseClient, IConfiguration config, IWithinReleaseService releaseService, IFirebaseLogger logger)
+        public ReleaseCommandHandler(IFirebaseService firebaseClient, IConfiguration config, IWithinReleaseService releaseService, IGitHubService githubService, IFirebaseLogger logger)
         {
             this.service = firebaseClient;
             this.config = config;
             this.releaseMessageText = config["ReleaseBatonText"];
             this.logger = logger;
             this.releaseService = releaseService;
+            this.githubService = githubService;
         }
 
         public async Task Handler(string type, string appId, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -67,7 +71,7 @@ namespace SharedBaton.CommandHandlers
                     var reply = MessageFactory.Attachment(new List<Attachment>());
                     reply.Attachments.Add(
                         DevEnvironmentBot.Cards.Card.DoYouWantToCloseTheTicket(
-                                type, GetRepo(type), oldBatonRequest.PullRequestNumber)
+                                type, GetRepo(type), oldBatonRequest.PullRequestNumber, githubService)
                             .ToAttachment());
 
                     await turnContext.SendActivityAsync(reply, cancellationToken);
