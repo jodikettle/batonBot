@@ -51,7 +51,7 @@
             }
             else
             {
-                var reply1 = MessageFactory.Text(info.mergeable_state);
+                var reply1 = MessageFactory.Text("merge status:" + info.mergeable_state);
                 await turnContext.SendActivityAsync(reply1, cancellationToken);
             }
 
@@ -61,12 +61,12 @@
                 {
                     await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
                         appId, baton.Conversation, async (context, token) =>
-                            await this.SendMergeMessage($"### Cant merge. this requires attention", context, token),
+                            await this.SendMergeMessage($"### Cant merge. It requires attention", context, token),
                         default(CancellationToken));
                 }
                 else
                 {
-                    var reply = MessageFactory.Text($"### Cant merge. this is required attention");
+                    var reply = MessageFactory.Text($"### Cant merge. It requires attention");
                     _ = await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
             }
