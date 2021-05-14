@@ -37,7 +37,7 @@
 
             if (notify)
             {
-                var reply1 = MessageFactory.Text(info.mergeable_state);
+                var reply1 = MessageFactory.Text("MergeState:"+ info.mergeable_state);
 
                 await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
                     appId, baton.Conversation, async (context, token) =>
@@ -61,7 +61,7 @@
                 {
                     await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
                         appId, baton.Conversation, async (context, token) =>
-                            await this.SendMergeMessage($"### Cant merge. this is required attention", context, token),
+                            await this.SendMergeMessage($"### Cant merge. this requires attention", context, token),
                         default(CancellationToken));
                 }
                 else
