@@ -77,7 +77,7 @@ namespace SharedBaton.CommandHandlers
                     await service.UpdateQueue(batonFireObject);
 
                     this.SendItsAllYours(turnContext, cancellationToken);
-                    await this.releaseService.GotBaton(baton, turnContext, cancellationToken);
+                    await this.releaseService.GotBaton(baton, string.Empty, false, turnContext, cancellationToken);
                 }
                 else
                 {

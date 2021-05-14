@@ -9,6 +9,6 @@ namespace SharedBaton.Interfaces
 
     public interface IWithinReleaseService
     {
-        Task GotBaton(BatonRequest baton, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken);
+        Task GotBaton(BatonRequest baton, string appId, bool notify, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken);
     }
 }

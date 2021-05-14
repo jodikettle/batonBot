@@ -116,7 +116,7 @@ namespace SharedBaton.CommandHandlers
                 await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, batonRequest.Conversation, async (context, token) =>
                     await SendYourBatonMessage(batonRequest.BatonName, context, token), default(CancellationToken));
 
-                await this.releaseService.GotBaton(batonRequest, turnContext, default(CancellationToken));
+                await this.releaseService.GotBaton(batonRequest, appId, true, turnContext, default(CancellationToken));
             }
         }
 

@@ -19,7 +19,7 @@
             this.service = service;
         }
 
-        public async Task GotBaton(BatonRequest baton, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        public async Task GotBaton(BatonRequest baton, string appId, bool notify, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             if (baton.PullRequestNumber == 0)
             {
@@ -37,8 +37,17 @@
 
             if (info.mergeable_state == "blocked")
             {
-                var reply = MessageFactory.Text($"### Its not ready to go. Do you have enough reviews?");
-                _ = await turnContext.SendActivityAsync(reply, cancellationToken);
+                if (notify)
+                {
+                    await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+                        appId, baton.Conversation, async (context, token) =>
+                            await turnContext.SendActivityAsync($"### Its not ready to go. Do you have enough reviews?"), cancellationToken);
+                }
+                else
+                {
+                    var reply = MessageFactory.Text($"### Its not ready to go. Do you have enough reviews?");
+                    _ = await turnContext.SendActivityAsync(reply, cancellationToken);
+                }
             }
             else if (info.mergeable_state == "behind")
             {
@@ -48,7 +57,16 @@
                     Card.GetUpdateYourBranchCard(baton.BatonName, repoName, baton.PullRequestNumber)
                         .ToAttachment());
 
-                await turnContext.SendActivityAsync(reply, cancellationToken);
+                if (notify)
+                {
+                    await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+                        appId, baton.Conversation, async (context, token) =>
+                            await turnContext.SendActivityAsync(reply), cancellationToken);
+                }
+                else
+                {
+                    await turnContext.SendActivityAsync(reply, cancellationToken);
+                }
             }
             else 
             {
@@ -58,7 +76,16 @@
                     Card.SquashAndMergeCard(baton.BatonName, repoName, baton.PullRequestNumber)
                         .ToAttachment());
 
-                await turnContext.SendActivityAsync(reply, cancellationToken);
+                if (notify)
+                {
+                    await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+                        appId, baton.Conversation, async (context, token) =>
+                            await turnContext.SendActivityAsync(reply), cancellationToken);
+                }
+                else
+                {
+                    await turnContext.SendActivityAsync(reply, cancellationToken);
+                }
             }
         }
 
