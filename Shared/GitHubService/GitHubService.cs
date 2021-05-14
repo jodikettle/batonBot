@@ -112,7 +112,8 @@
                             new
                             {
                                 Accept = "application/vnd.github.v3+json",
-                                Authorization = $"token {gitHubAccessToken}"
+                                Authorization = $"token {gitHubAccessToken}",
+                                User_Agent = "BatonBot"
                             })
                         .PutJsonAsync(
                             new
@@ -120,7 +121,6 @@
                                 commit_title = pr.title,
                                 commit_message = pr.GetMergeDecriptionString(),
                                 merge_method = "squash",
-                                User_Agent = "BatonBot"
                             });
 
                     return result.StatusCode == 200
