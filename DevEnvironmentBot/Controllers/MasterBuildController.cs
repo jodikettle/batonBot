@@ -5,11 +5,9 @@ namespace DevEnvironmentBot.Controllers
 {
     using System;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using DevEnvironmentBot.Cards;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Integration.AspNet.Core;
     using Microsoft.Bot.Schema;
@@ -51,23 +49,20 @@ namespace DevEnvironmentBot.Controllers
             var baton = batons.FirstOrDefault(x => x.Object.Name == batonName);
             var queue = baton?.Object.Queue;
 
-            if (queue != null && queue.Count > 1)
+            var batonHolder = queue?.FirstOrDefault();
+
+            if (batonHolder != null)
             {
-                var batonHolder = queue.FirstOrDefault();
+                var repoName = this.getRepoName(batonName);
 
-                if (batonHolder != null)
+                if (!string.IsNullOrEmpty(repoName))
                 {
-                    var repoName = getRepoName(batonName);
-
-                    if (!string.IsNullOrEmpty(repoName))
-                    {
-                        await ((BotAdapter)_adapter).ContinueConversationAsync(
-                            _appId,
-                            batonHolder.Conversation,
-                            async (context, token) =>
-                                await BotCallback( $"Build was successful time to deploy for {batonName}", context, token),
-                            default(CancellationToken));
-                    }
+                    await ((BotAdapter)this._adapter).ContinueConversationAsync(
+                        this._appId,
+                        batonHolder.Conversation,
+                        async (context, token) =>
+                            await this.BotCallback( $"Build was successful time to deploy for {batonName}", context, token),
+                        default(CancellationToken));
                 }
             }
         }

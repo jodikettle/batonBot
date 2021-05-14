@@ -101,7 +101,7 @@ namespace DevEnvironmentBot.Cards
         public static HeroCard DoYouWantToCloseTheTicket(string batonName, string repoName, int prNumber, IGitHubService service)
         {
             List<CardAction> actions = null;
-            var ticketId = service.GetTicketId(repoName, prNumber);
+            var ticketId = service.GetTicketId(repoName, prNumber).GetAwaiter().GetResult();
 
             if (prNumber == 0)
             {
