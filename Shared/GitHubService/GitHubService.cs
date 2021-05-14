@@ -104,33 +104,44 @@
 
             if (pr.mergeable_state != "blocked" && !pr.merged)
             {
+                try
+                {
+                    var result = await this.gitHubApiUrl
+                        .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/merge")
+                        .WithHeaders(
+                            new
+                            {
+                                Accept = "application/vnd.github.v3+json",
+                                Authorization = $"token {gitHubAccessToken}"
+                            })
+                        .PutJsonAsync(
+                            new
+                            {
+                                commit_title = pr.title,
+                                commit_message = pr.GetMergeDecriptionString(),
+                                merge_method = "squash",
+                                User_Agent = "BatonBot"
+                            });
 
-                var result = await this.gitHubApiUrl
-                    .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/merge")
-                    .WithHeaders(new
-                    {
-                        Accept = "application/vnd.github.v3+json",
-                        Authorization = $"token {gitHubAccessToken}"
-                    })
-                    .PutJsonAsync(
-                        new
+                    return result.StatusCode == 200
+                        ? new ServiceResult()
                         {
-                            commit_title = pr.title,
-                            commit_message = pr.GetMergeDecriptionString(),
-                            merge_method = "squash",
-                            User_Agent = "BatonBot"
-                        });
-
-                return result.StatusCode == 200
-                    ? new ServiceResult()
-                    {
-                        Succeeded = true
-                    }
-                    : new ServiceResult()
+                            Succeeded = true
+                        }
+                        : new ServiceResult()
+                        {
+                            Succeeded = false,
+                            ReasonForFailure = result.ResponseMessage.ToString()
+                        };
+                }
+                catch (Exception e)
+                {
+                    return new ServiceResult()
                     {
                         Succeeded = false,
-                        ReasonForFailure = result.ResponseMessage.ToString()
+                        ReasonForFailure = e.Message
                     };
+                }
             }
             return new ServiceResult()
             {
