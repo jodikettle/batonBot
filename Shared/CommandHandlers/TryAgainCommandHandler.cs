@@ -36,9 +36,6 @@
             if (queue.First().UserName.Equals(name))
             {
                 var baton = queue.FirstOrDefault();
-                var reply = MessageFactory.Text($"Trying again");
-                await turnContext.SendActivityAsync(reply, cancellationToken);
-
                 await this.releaseService.GotBaton(baton, string.Empty, false, turnContext, cancellationToken);
             }
             else

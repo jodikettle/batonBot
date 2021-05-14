@@ -23,16 +23,8 @@
         {
             if (notify)
             {
-
                 await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, baton.Conversation, async (context, token) =>
                     await SendYourBatonMessage(baton.BatonName, baton.PullRequestNumber, "Test", context, token), default(CancellationToken));
-            }
-            else
-            {
-                var reply1 = MessageFactory.Text(baton.BatonName);
-                await turnContext.SendActivityAsync(reply1, cancellationToken);
-                var reply2 = MessageFactory.Text(baton.PullRequestNumber.ToString());
-                await turnContext.SendActivityAsync(reply2, cancellationToken);
             }
 
             if (baton.PullRequestNumber == 0)
@@ -62,7 +54,21 @@
                 await turnContext.SendActivityAsync(reply1, cancellationToken);
             }
 
-            if (info.mergeable_state == "blocked")
+            if (info.mergeable_state == "dirty")
+            {
+                if (notify)
+                {
+                    await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+                        appId, baton.Conversation, async (context, token) =>
+                            await turnContext.SendActivityAsync($"### Cant merge. this is required attention"), cancellationToken);
+                }
+                else
+                {
+                    var reply = MessageFactory.Text($"### Cant merge. this is required attention");
+                    _ = await turnContext.SendActivityAsync(reply, cancellationToken);
+                }
+            }
+            else if (info.mergeable_state == "blocked")
             {
                 if (notify)
                 {
