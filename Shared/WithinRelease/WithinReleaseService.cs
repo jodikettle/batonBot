@@ -21,12 +21,6 @@
 
         public async Task GotBaton(BatonRequest baton, string appId, bool notify, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (notify)
-            {
-                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, baton.Conversation, async (context, token) =>
-                    await SendYourBatonMessage(baton.BatonName, baton.PullRequestNumber, "Test", context, token), default(CancellationToken));
-            }
-
             if (baton.PullRequestNumber == 0)
             {
                 return;
@@ -60,7 +54,8 @@
                 {
                     await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
                         appId, baton.Conversation, async (context, token) =>
-                            await turnContext.SendActivityAsync($"### Cant merge. this is required attention"), cancellationToken);
+                            await this.SendMergeMessage($"### Cant merge. this is required attention", context, token),
+                        default(CancellationToken));
                 }
                 else
                 {
@@ -74,7 +69,8 @@
                 {
                     await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
                         appId, baton.Conversation, async (context, token) =>
-                            await turnContext.SendActivityAsync($"### Its not ready to go. Do you have enough reviews?"), cancellationToken);
+                            await this.SendMergeMessage($"### Its not ready to go. Do you have enough reviews?", context, token),
+                        default(CancellationToken));
                 }
                 else
                 {
@@ -94,7 +90,8 @@
                 {
                     await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
                         appId, baton.Conversation, async (context, token) =>
-                            await turnContext.SendActivityAsync(reply), cancellationToken);
+                            await this.SendMergeMessage(reply, context, token),
+                        default(CancellationToken));
                 }
                 else
                 {
@@ -113,7 +110,8 @@
                 {
                     await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
                         appId, baton.Conversation, async (context, token) =>
-                            await turnContext.SendActivityAsync(reply), cancellationToken);
+                            await this.SendMergeMessage(reply, context, token),
+                        default(CancellationToken));
                 }
                 else
                 {
@@ -141,6 +139,19 @@
                 repo = "ADA-Research-Configuration";
             }
             return repo;
+        }
+
+        private async Task SendMergeMessage(string message, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            // If you encounter permission-related errors when sending this message, see
+            // https://aka.ms/BotTrustServiceUrl
+            await turnContext.SendActivityAsync(message);
+        }
+        private async Task SendMergeMessage(IMessageActivity message, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            // If you encounter permission-related errors when sending this message, see
+            // https://aka.ms/BotTrustServiceUrl
+            await turnContext.SendActivityAsync(message);
         }
 
         private async Task SendYourBatonMessage(string name, int PrNumber, string repoName, ITurnContext turnContext, CancellationToken cancellationToken)
