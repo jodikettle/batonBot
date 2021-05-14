@@ -21,8 +21,19 @@
 
         public async Task GotBaton(BatonRequest baton, string appId, bool notify, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, baton.Conversation, async (context, token) =>
-                await SendYourBatonMessage(baton.BatonName, baton.PullRequestNumber, "Test", context, token), default(CancellationToken));
+            if (notify)
+            {
+
+                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, baton.Conversation, async (context, token) =>
+                    await SendYourBatonMessage(baton.BatonName, baton.PullRequestNumber, "Test", context, token), default(CancellationToken));
+            }
+            else
+            {
+                var reply1 = MessageFactory.Text(baton.BatonName);
+                await turnContext.SendActivityAsync(reply1, cancellationToken);
+                var reply2 = MessageFactory.Text(baton.PullRequestNumber.ToString());
+                await turnContext.SendActivityAsync(reply2, cancellationToken);
+            }
 
             if (baton.PullRequestNumber == 0)
             {
@@ -38,9 +49,18 @@
 
             var info = await this.service.GetPRInfo(repoName, baton.PullRequestNumber);
 
-            await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, baton.Conversation, async (context, token) =>
-                await SendYourBatonMessage(baton.BatonName, baton.PullRequestNumber, repoName, context, token), default(CancellationToken));
-
+            if (notify)
+            {
+                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+                    appId, baton.Conversation, async (context, token) =>
+                        await SendYourBatonMessage(baton.BatonName, baton.PullRequestNumber, repoName, context, token),
+                    default(CancellationToken));
+            }
+            else
+            {
+                var reply1 = MessageFactory.Text(info.mergeable_state);
+                await turnContext.SendActivityAsync(reply1, cancellationToken);
+            }
 
             if (info.mergeable_state == "blocked")
             {
