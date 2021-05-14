@@ -37,6 +37,13 @@
 
             if (notify)
             {
+                var reply1 = MessageFactory.Text(info.mergeable_state);
+
+                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+                    appId, baton.Conversation, async (context, token) =>
+                        await SendMergeMessage(reply1, context, token),
+                    default(CancellationToken));
+
                 await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
                     appId, baton.Conversation, async (context, token) =>
                         await SendYourBatonMessage(baton.BatonName, baton.PullRequestNumber, repoName, context, token),
@@ -80,10 +87,9 @@
             }
             else if (info.mergeable_state == "behind")
             {
-                var attachments = new List<Attachment>();
-                var reply = MessageFactory.Attachment(attachments);
+                var reply = MessageFactory.Attachment(new List<Attachment>());
                 reply.Attachments.Add(
-                    Card.GetUpdateYourBranchCard(baton.BatonName, repoName, baton.PullRequestNumber)
+                    Card.GetUpdateYourBranchCardBeforeMerge(baton.BatonName, repoName, baton.PullRequestNumber)
                         .ToAttachment());
 
                 if (notify)
@@ -100,8 +106,7 @@
             }
             else 
             {
-                var attachments = new List<Attachment>();
-                var reply = MessageFactory.Attachment(attachments);
+                var reply = MessageFactory.Attachment(new List<Attachment>());
                 reply.Attachments.Add(
                     Card.SquashAndMergeCard(baton.BatonName, repoName, baton.PullRequestNumber)
                         .ToAttachment());
@@ -147,6 +152,7 @@
             // https://aka.ms/BotTrustServiceUrl
             await turnContext.SendActivityAsync(message);
         }
+
         private async Task SendMergeMessage(IMessageActivity message, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             // If you encounter permission-related errors when sending this message, see

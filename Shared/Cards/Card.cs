@@ -75,6 +75,27 @@ namespace DevEnvironmentBot.Cards
 
             return heroCard;
         }
+        public static HeroCard GetUpdateYourBranchCardBeforeMerge(string batonName, string repoName, int prNumber)
+        {
+            List<CardAction> actions = null;
+            if (prNumber > 0)
+            {
+                actions = new List<CardAction>
+                {
+                    new CardAction(ActionTypes.OpenUrl, "Open Pull Request", value: $"https://github.com/Redington/{repoName}/pull/{prNumber}"),
+                    new CardAction(
+                        ActionTypes.ImBack, "Update Branch With Master", null, null, null, $"updategithub {batonName} {prNumber}", null)
+                };
+            }
+
+            var heroCard = new HeroCard
+            {
+                Title = $"Branch requires updating before merging for {batonName}",
+                Buttons = actions
+            };
+
+            return heroCard;
+        }
 
         public static HeroCard SquashAndMergeCard(string batonName, string repoName, int prNumber)
         {
