@@ -23,11 +23,12 @@ namespace SharedBaton.CommandHandlers
         private readonly IGithubMergeHandler githubMergeHandler;
         private readonly ICloseTicketCommandHandler closeTicketHandler;
         private readonly ITryAgainCommandHandler tryAgainHandler;
+        private readonly IToughDayCommandHandler toughDayCommandHandler;
         private readonly IConfiguration config;
 
         public CommandHandler(IFirebaseService client, ICardCreator cardCreator, IBatonService batonService,
             ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IAdminReleaseCommandHandler adminReleaseCommandHandler, IShowCommandHandler showCommandHandler, IMoveMeCommandHandler moveMeCommandHandler, IGithubUpdateHandler githubUpdateHandler, IGithubMergeHandler githubMergeHandler,
-            ICloseTicketCommandHandler closeTicketHandler, ITryAgainCommandHandler tryAgainHandler, IConfiguration config)
+            ICloseTicketCommandHandler closeTicketHandler, ITryAgainCommandHandler tryAgainHandler, IToughDayCommandHandler toughDayCommandHandler, IConfiguration config)
         {
             this.batons = batonService;
             this.takeHandler = takeCommandHandler;
@@ -39,6 +40,7 @@ namespace SharedBaton.CommandHandlers
             this.githubMergeHandler = githubMergeHandler;
             this.closeTicketHandler = closeTicketHandler;
             this.tryAgainHandler = tryAgainHandler;
+            this.toughDayCommandHandler = toughDayCommandHandler;
             this.config = config;
         }
 
@@ -55,6 +57,11 @@ namespace SharedBaton.CommandHandlers
             if (text.Contains("show"))
             {
                 this.showHandler.Handler(turnContext, cancellationToken);
+                return;
+            }
+            if (text.Contains("tough day"))
+            {
+                await this.toughDayCommandHandler.Handler(turnContext, cancellationToken);
                 return;
             }
             if (text.IndexOf(' ') == -1)
