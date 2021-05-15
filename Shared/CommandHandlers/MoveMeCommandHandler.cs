@@ -49,6 +49,7 @@ namespace SharedBaton.CommandHandlers
                     var first = queue.Dequeue();
                     first.Comment = first.Comment + $" {first.UserName} moved down once";
                     first.DateReceived = null;
+                    first.MoveMeCount += 1;
 
                     //Tell the other person
                     await this.Notify(queue.FirstOrDefault(), appId, turnContext);
