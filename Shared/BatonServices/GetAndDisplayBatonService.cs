@@ -22,7 +22,7 @@ namespace SharedBaton.BatonServices
 
         public async Task SendBatons(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            var batons = await this.firebaseClient.GetQueues();
+            var batons = this.firebaseClient.GetQueues().GetAwaiter().GetResult();
             await SendBatonInfoAsync(turnContext, cancellationToken, batons);
         }
 
