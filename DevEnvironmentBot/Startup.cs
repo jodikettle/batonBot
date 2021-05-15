@@ -23,6 +23,7 @@ namespace DevEnvironmentBot
     using Microsoft.Bot.Builder.Azure.Blobs;
     using SharedBaton.CommandFactory;
     using SharedBaton.GitHubService;
+    using SharedBaton.RepositoryMapper;
     using SharedBaton.WithinRelease;
 
     public class Startup
@@ -56,6 +57,7 @@ namespace DevEnvironmentBot
             services.AddSingleton<IBatonService, BatonService>();
             services.AddSingleton<IGitHubService, GitHubService>();
             services.AddSingleton<IFirebaseLogger, FirebaseLogger>();
+            services.AddSingleton<IRepositoryMapper, RepositoryMapper>();
 
             services.AddSingleton<ICommandHandler, CommandHandler>();
             services.AddSingleton<IShowCommandHandler, ShowCommandHandler>();
