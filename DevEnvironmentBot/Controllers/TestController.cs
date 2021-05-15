@@ -18,12 +18,34 @@ namespace DevEnvironmentBot.Controllers
         }
 
 
-        [HttpGet("{repo}/{prNumber}")]
-        public async Task<PullRequest> Get(string repo, int prNumber)
+        [HttpGet("{baton}/{prNumber}")]
+        public async Task<PullRequest> Get(string baton, int prNumber)
         {
+            var repo = getRepoName(baton);
             var test =  await this.service.GetPRInfo(repo, prNumber);
             return test;
         }
+
+        private string getRepoName(string type)
+        {
+            if (type == "be")
+            {
+                return "maraschino";
+            }
+
+            if (type == "fe")
+            {
+                return "ADA-Research-UI";
+            }
+
+            if (type == "man")
+            {
+                return "ADA-Research-Configuration";
+            }
+
+            return null;
+        }
+
 
         [HttpGet("Test")]
         public string GetConfig()

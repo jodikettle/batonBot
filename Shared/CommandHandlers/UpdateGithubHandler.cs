@@ -65,13 +65,16 @@
                     }
                     else if (result.ReasonForFailure == "Not Needed")
                     {
-                        var reply = MessageFactory.Text($"Its not required to update this branch at this time.");
+                        var reply = MessageFactory.Text($"Its not required to update this branch at this time. {result.MergeStatus}");
                         _ = await turnContext.SendActivityAsync(reply, cancellationToken);
                     }
                     else
                     {
                         var reply = MessageFactory.Text($"That didn't work out can you update it on the link");
                         _ = await turnContext.SendActivityAsync(reply, cancellationToken);
+
+                        var reply1 = MessageFactory.Text($"{result.MergeStatus} - {result.ReasonForFailure}");
+                        _ = await turnContext.SendActivityAsync(reply1, cancellationToken);
                     }
                 }
             }

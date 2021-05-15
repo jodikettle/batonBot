@@ -7,33 +7,41 @@ using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using SharedBaton.Interfaces;
 
 namespace DevEnvironmentBot.Bots
 {
+    using SharedBaton.Models;
+
     public class DevBot : TeamsActivityHandler
     {
         private string _appId;
         private string _appPassword;
         private string _appName;
         private ICommandHandler commandHandler;
-        protected readonly ILogger Logger;
+        private BotState _userState;
 
-        public DevBot(IConfiguration config, ICommandHandler commandHandler, ILogger<DevBot> logger)
+        public DevBot(IConfiguration config, ICommandHandler commandHandler, UserState userState)
         {
             this._appId = config["MicrosoftAppId"];
             this._appPassword = config["MicrosoftAppPassword"];
             this._appName = config["AppDisplayName"];
             this.commandHandler = commandHandler;
-            this.Logger = logger;
+            this._userState = userState;
+        }
+
+        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            await base.OnTurnAsync(turnContext, cancellationToken);
+            await _userState.SaveChangesAsync(turnContext, false, cancellationToken);
         }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
-            Logger.LogInformation($"Starting a call with this value{turnContext.Activity.Value} by {turnContext.Activity.From.Name} with id: {turnContext.Activity.From.Id} .");
+            var userStateAccessors = _userState.CreateProperty<UserProfile>(nameof(UserProfile));
+            var userProfile = await userStateAccessors.GetAsync(turnContext, () => new UserProfile());
 
             var obj = (JObject) turnContext.Activity.Value;
             var text = obj != null ? obj["x"].ToString() : turnContext.Activity.Text.Trim().ToLowerInvariant();

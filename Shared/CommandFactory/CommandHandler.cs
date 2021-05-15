@@ -8,7 +8,7 @@ using SharedBaton.Card;
 using SharedBaton.Commands;
 using SharedBaton.Interfaces;
 
-namespace SharedBaton.CommandHandlers
+namespace SharedBaton.CommandFactory
 {
     public class CommandHandler : ICommandHandler
     {
@@ -24,11 +24,12 @@ namespace SharedBaton.CommandHandlers
         private readonly ICloseTicketCommandHandler closeTicketHandler;
         private readonly ITryAgainCommandHandler tryAgainHandler;
         private readonly IToughDayCommandHandler toughDayCommandHandler;
+        private readonly ITokenCommandHandler tokenHandler;
         private readonly IConfiguration config;
 
         public CommandHandler(IFirebaseService client, ICardCreator cardCreator, IBatonService batonService,
             ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IAdminReleaseCommandHandler adminReleaseCommandHandler, IShowCommandHandler showCommandHandler, IMoveMeCommandHandler moveMeCommandHandler, IGithubUpdateHandler githubUpdateHandler, IGithubMergeHandler githubMergeHandler,
-            ICloseTicketCommandHandler closeTicketHandler, ITryAgainCommandHandler tryAgainHandler, IToughDayCommandHandler toughDayCommandHandler, IConfiguration config)
+            ICloseTicketCommandHandler closeTicketHandler, ITryAgainCommandHandler tryAgainHandler, IToughDayCommandHandler toughDayCommandHandler, ITokenCommandHandler tokenHandler, IConfiguration config)
         {
             this.batons = batonService;
             this.takeHandler = takeCommandHandler;
@@ -41,6 +42,7 @@ namespace SharedBaton.CommandHandlers
             this.closeTicketHandler = closeTicketHandler;
             this.tryAgainHandler = tryAgainHandler;
             this.toughDayCommandHandler = toughDayCommandHandler;
+            this.tokenHandler = tokenHandler;
             this.config = config;
         }
 
@@ -62,6 +64,17 @@ namespace SharedBaton.CommandHandlers
             if (text.Contains("tough day"))
             {
                 await this.toughDayCommandHandler.Handler(turnContext, cancellationToken);
+                return;
+            }
+            if (text.Contains("view token"))
+            {
+                await this.tokenHandler.ShowHandler(turnContext, cancellationToken);
+                return;
+            }
+            if (text.Contains("set token"))
+            {
+                var comment = text.Replace( "set token ", "").Trim();
+                await this.tokenHandler.SetHandler(comment, turnContext.Activity.From.Name, turnContext, cancellationToken);
                 return;
             }
             if (text.IndexOf(' ') == -1)

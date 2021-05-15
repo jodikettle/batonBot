@@ -159,6 +159,7 @@
                 return new ServiceResult()
                 {
                     Succeeded = false,
+                    MergeStatus = pr.mergeable_state,
                     ReasonForFailure = "Not Needed"
                 };
             }
@@ -182,6 +183,7 @@
                 : new ServiceResult()
                 {
                     Succeeded = false,
+                    MergeStatus = pr.mergeable_state,
                     ReasonForFailure = result.ResponseMessage.ToString()
                 };
         }

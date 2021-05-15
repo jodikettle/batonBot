@@ -104,7 +104,7 @@
                     await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
             }
-            else 
+            else if (info.mergeable_state == "clean")
             {
                 var reply = MessageFactory.Attachment(new List<Attachment>());
                 reply.Attachments.Add(
@@ -121,6 +121,21 @@
                 else
                 {
                     await turnContext.SendActivityAsync(reply, cancellationToken);
+                }
+            }
+            else
+            {
+                if (notify)
+                {
+                    await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+                        appId, baton.Conversation, async (context, token) =>
+                            await this.SendMergeMessage($"Something went wrong the merge status is {info.mergeable_state}", context, token),
+                        default(CancellationToken));
+                }
+                else
+                {
+                    var reply = MessageFactory.Text($"Something went wrong the merge status is {info.mergeable_state}");
+                    _ = await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
             }
         }

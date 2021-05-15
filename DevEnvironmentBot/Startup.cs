@@ -23,6 +23,7 @@ using SharedBaton.Interfaces;
 
 namespace DevEnvironmentBot
 {
+    using SharedBaton.CommandFactory;
     using SharedBaton.GitHubService;
     using SharedBaton.WithinRelease;
 
@@ -42,6 +43,12 @@ namespace DevEnvironmentBot
 
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+            //var storage1 = new BlobsStorage(storageString, "batonbotstorage");
+
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            services.AddSingleton(userState);
+
 
             // Create a global hashset for our ConversationReferences
             services.AddSingleton<ConcurrentDictionary<string, ConversationReference>>();
@@ -67,6 +74,7 @@ namespace DevEnvironmentBot
             services.AddSingleton<ICloseTicketCommandHandler, CloseTicketCommandHandler>();
             services.AddSingleton<ITryAgainCommandHandler, TryAgainCommandHandler>();
             services.AddSingleton<IToughDayCommandHandler, ToughDayCommandHandler>();
+            services.AddSingleton<ITokenCommandHandler, TokenCommandHandler>();
             services.AddSingleton<IFirebaseLogger, FirebaseLogger>();
         }
 
