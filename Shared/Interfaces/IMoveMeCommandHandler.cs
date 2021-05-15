@@ -7,7 +7,7 @@
 
     public interface IMoveMeCommandHandler
     {
-        Task Handler(string type, string appId, ITurnContext<IMessageActivity> turnContext,
+        Task Handler(string type, ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken);
     }
 }

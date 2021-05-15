@@ -30,7 +30,7 @@ namespace SharedBaton.CommandHandlers
         public async Task Handler(string type, string comment, int pullRequest, ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
-            var batons = service.GetQueue().GetAwaiter().GetResult();
+            var batons = await service.GetQueues();
             var batonFireObject = batons?.FirstOrDefault(x => x.Object.Name.Equals(type));
 
             var conversationReference = turnContext.Activity.GetConversationReference();

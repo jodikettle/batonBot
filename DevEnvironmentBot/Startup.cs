@@ -12,7 +12,6 @@ using Microsoft.Extensions.Hosting;
 using DevEnvironmentBot.Bots;
 using SharedBaton.Firebase;
 using SharedBaton.Card;
-using DevEnvironmentBot.Cards;
 using Microsoft.Extensions.Configuration;
 using SharedBaton.BatonServices;
 using SharedBaton.CommandHandlers;
@@ -52,25 +51,24 @@ namespace DevEnvironmentBot
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, DevBot>();
 
-            services.AddSingleton<ICardCreator, Card>();
+            services.AddSingleton<ICardCreator, CardCreator>();
             services.AddSingleton<IFirebaseService, FirebaseService>(); 
             services.AddSingleton<IBatonService, BatonService>();
+            services.AddSingleton<IGitHubService, GitHubService>();
+            services.AddSingleton<IFirebaseLogger, FirebaseLogger>();
 
             services.AddSingleton<ICommandHandler, CommandHandler>();
             services.AddSingleton<IShowCommandHandler, ShowCommandHandler>();
             services.AddSingleton<ITakeCommandHandler, TakeCommandHandler>();
             services.AddSingleton<IReleaseCommandHandler, ReleaseCommandHandler>();
-            services.AddSingleton<IAdminReleaseCommandHandler, AdminReleaseCommandHandler>();
             services.AddSingleton<IMoveMeCommandHandler, MoveMeCommandHandler>();
             services.AddSingleton<IGithubUpdateHandler, UpdateGithubHandler>();
             services.AddSingleton<IGithubMergeHandler, MergeGithubHandler>();
-            services.AddSingleton<IGitHubService, GitHubService>();
             services.AddSingleton<IWithinReleaseService, WithinReleaseService>();
             services.AddSingleton<ICloseTicketCommandHandler, CloseTicketCommandHandler>();
             services.AddSingleton<ITryAgainCommandHandler, TryAgainCommandHandler>();
             services.AddSingleton<IToughDayCommandHandler, ToughDayCommandHandler>();
             services.AddSingleton<ITokenCommandHandler, TokenCommandHandler>();
-            services.AddSingleton<IFirebaseLogger, FirebaseLogger>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -19,16 +19,10 @@
             this.releaseService = releaseService;
         }
 
-        public async Task Handler(string type, string appId, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        public async Task Handler(string batonName, string appId, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            var batons = service.GetQueue().GetAwaiter().GetResult();
-            var batonFireObject = batons?.FirstOrDefault(x => x.Object.Name.Equals(type));
-
-            if (batonFireObject == null) return;
-
-            var queue = batonFireObject.Object.Queue;
-
             var name = turnContext.Activity.From.Name.Replace(" | Redington", "").Replace(" | Godel", "");
+            var queue = await this.service.GetQueueForBaton(batonName);
 
             if (queue.Count <= 0) return;
 

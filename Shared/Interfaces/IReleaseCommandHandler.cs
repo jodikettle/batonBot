@@ -7,7 +7,10 @@ namespace SharedBaton.Interfaces
 {
     public interface IReleaseCommandHandler
     {
-        Task Handler(string type, string appId, ITurnContext<IMessageActivity> turnContext,
+        Task Handler(string type, ITurnContext<IMessageActivity> turnContext,
+            CancellationToken cancellationToken);
+
+        Task AdminHandler(string type, string name, ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken);
     }
 }

@@ -6,18 +6,17 @@ using Firebase.Database;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using SharedBaton.Models;
-using SharedBaton.Card;
 using SharedBaton.Interfaces;
 
-namespace DevEnvironmentBot.Cards
+namespace SharedBaton.Card
 {
     using SharedBaton.GitHubService;
 
-    public class Card : ICardCreator
+    public class CardCreator : ICardCreator
     {
         private readonly IBatonService batonList;
 
-        public Card(IBatonService batonList)
+        public CardCreator(IBatonService batonList)
         {
             this.batonList = batonList;
         }
@@ -53,7 +52,7 @@ namespace DevEnvironmentBot.Cards
             return adaptiveCardAttachment;
         }
 
-        public static HeroCard GetUpdateYourBranchCard(string batonName, string repoName, int prNumber)
+        public HeroCard GetUpdateYourBranchCard(string batonName, string repoName, int prNumber)
         {
             List<CardAction> actions = null;
             if (prNumber> 0 )
@@ -66,38 +65,33 @@ namespace DevEnvironmentBot.Cards
                 };
             }
 
-            var heroCard = new HeroCard
+            return new HeroCard
             {
                 Title = $"Someone has merged into the repo for {batonName}",
                 Text = $"As you are next you should update your branch",
                 Buttons = actions
             };
-
-            return heroCard;
         }
-        public static HeroCard GetUpdateYourBranchCardBeforeMerge(string batonName, string repoName, int prNumber)
+        public HeroCard GetUpdateYourBranchCardBeforeMerge(string batonName, string repoName, int prNumber)
         {
-            List<CardAction> actions = null;
-            if (prNumber > 0)
+            if (prNumber ==  0)
             {
-                actions = new List<CardAction>
+                return null;
+            }
+
+            return new HeroCard
+            {
+                Title = $"Branch requires updating before merging for {batonName}",
+                Buttons = new List<CardAction>
                 {
                     new CardAction(ActionTypes.OpenUrl, "Open Pull Request", value: $"https://github.com/Redington/{repoName}/pull/{prNumber}"),
                     new CardAction(
                         ActionTypes.ImBack, "Update Branch With Master", null, null, null, $"updategithub {batonName} {prNumber}", null)
-                };
-            }
-
-            var heroCard = new HeroCard
-            {
-                Title = $"Branch requires updating before merging for {batonName}",
-                Buttons = actions
+                }
             };
-
-            return heroCard;
         }
 
-        public static HeroCard SquashAndMergeCard(string batonName, string repoName, int prNumber)
+        public HeroCard SquashAndMergeCard(string batonName, string repoName, int prNumber)
         {
             List<CardAction> actions = null;
             if (prNumber > 0)
@@ -119,31 +113,31 @@ namespace DevEnvironmentBot.Cards
             return heroCard;
         }
 
-        public static HeroCard DoYouWantToCloseTheTicket(string batonName, string repoName, int prNumber, IGitHubService service)
+        public HeroCard DoYouWantToCloseTheTicket(string batonName, string repoName, int prNumber, IGitHubService service)
         {
-            List<CardAction> actions = null;
-            var ticketId = service.GetTicketId(repoName, prNumber).GetAwaiter().GetResult();
-
             if (prNumber == 0)
             {
                 return null;
             }
 
-            actions = new List<CardAction>
-            {                    
-                new CardAction(
-                    ActionTypes.OpenUrl, "View Ticket", value: $"https://github.com/Redington/ada/issues/{ticketId}"),
-                new CardAction(
-                    ActionTypes.ImBack, "Close Ticket", null, null, null, $"closeticket {batonName} {prNumber}", null)
-            };
+            var ticketId = service.GetTicketId(repoName, prNumber);
 
-            var heroCard = new HeroCard
+            if (ticketId == 0)
+            {
+                return null;
+            }
+
+            return new HeroCard
             {
                 Title = $"Do you want to close your ticket linked to Pr:{prNumber} num: {ticketId}?",
-                Buttons = actions
+                Buttons = new List<CardAction>
+                {
+                    new CardAction(
+                        ActionTypes.OpenUrl, "View Ticket", value: $"https://github.com/Redington/ada/issues/{ticketId}"),
+                    new CardAction(
+                        ActionTypes.ImBack, "Close Ticket", null, null, null, $"closeticket {batonName} {prNumber}", null)
+                }
             };
-
-            return heroCard;
         }
 
         private static string FormatQueue(BatonQueue queue)

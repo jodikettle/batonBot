@@ -9,7 +9,8 @@ namespace SharedBaton.Firebase
     {
         Task UpdateQueue(FirebaseObject<BatonQueue> queue);
         void SaveQueue(BatonQueue queue);
-
-        Task<IList<FirebaseObject<BatonQueue>>> GetQueue();
+        Task<IList<FirebaseObject<BatonQueue>>> GetQueues();
+        Task<Queue<BatonRequest>> GetQueueForBaton(string baton); 
+        Task<FirebaseObject<BatonQueue>> GetQueueFireObjectForBaton(string batonName);
     }
 }

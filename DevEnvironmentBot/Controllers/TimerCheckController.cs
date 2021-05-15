@@ -17,33 +17,27 @@ namespace DevEnvironmentBot.Controllers
     public class TimerCheckController : ControllerBase
     {
         private readonly IFirebaseService service;
-        private readonly IBotFrameworkHttpAdapter _adapter;
-        private readonly string _appId;
-        private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
-        private readonly int _timerCheckAllowance;
+        private readonly IBotFrameworkHttpAdapter adapter;
+        private readonly string appId;
+        private readonly int timerCheckAllowance;
 
-        public TimerCheckController(IBotFrameworkHttpAdapter adapter, IConfiguration configuration, IFirebaseService firebaseClient, ConcurrentDictionary<string, ConversationReference> conversationReferences)
+        public TimerCheckController(IBotFrameworkHttpAdapter adapter, IConfiguration configuration, IFirebaseService firebaseClient)
         {
-            _adapter = adapter;
-            _conversationReferences = conversationReferences;
-            _appId = configuration["MicrosoftAppId"];
-            _timerCheckAllowance = Int32.Parse(configuration["TimerCheckAllowance"]);
-
-            // If the channel is the Emulator, and authentication is not in use,
-            // the AppId will be null.  We generate a random AppId for this case only.
-            // This is not required for production, since the AppId will have a value.
-            if (string.IsNullOrEmpty(_appId))
-            {
-                _appId = Guid.NewGuid().ToString(); //if no AppId, use a random Guid
-            }
-
+            this.adapter = adapter;
+            this.appId = configuration["MicrosoftAppId"];
+            this.timerCheckAllowance = Int32.Parse(configuration["TimerCheckAllowance"]);
             this.service = firebaseClient;
+
+            if (string.IsNullOrEmpty(this.appId))
+            {
+                this.appId = Guid.NewGuid().ToString(); //if no AppId, use a random Guid
+            }
         }
 
         [HttpGet]
         public async Task Get()
         {
-            var batons = service.GetQueue().GetAwaiter().GetResult();
+            var batons = service.GetQueues().GetAwaiter().GetResult();
 
             foreach (var baton in batons)
             {
@@ -51,12 +45,12 @@ namespace DevEnvironmentBot.Controllers
                 if (queue.Count > 0)
                 {
                     var batonHolder = queue.FirstOrDefault();
-                    var onehoursAgo = DateTime.Now.AddHours(_timerCheckAllowance * -1);
-                    if (batonHolder.DateReceived < onehoursAgo)
+                    var hoursAgo = DateTime.Now.AddHours(timerCheckAllowance * -1);
+                    if (batonHolder.DateReceived < hoursAgo)
                     {
                         if (batonHolder.Conversation != null)
                         {
-                            await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, batonHolder.Conversation,
+                            await ((BotAdapter)adapter).ContinueConversationAsync(appId, batonHolder.Conversation,
                                 async (context, token) =>
                                 {
                                     await context.SendActivityAsync($"Hey! whatcha got there? Is it? Oh it is the {baton.Object.Name} baton");
@@ -65,12 +59,6 @@ namespace DevEnvironmentBot.Controllers
                     }
                 }
             }
-        }
-
-        [HttpGet("Test")]
-        public async Task<string> GetTest()
-        {
-            return "test";
         }
     }
 }

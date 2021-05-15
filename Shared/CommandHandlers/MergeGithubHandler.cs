@@ -8,51 +8,34 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SharedBaton.Firebase;
+    using SharedBaton.RepositoryMapper;
 
     public class MergeGithubHandler : IGithubMergeHandler {
 
         private readonly IGitHubService gitHubService;
         private readonly IFirebaseService service;
+        private readonly IRepositoryMapper repoMapper;
 
-        public MergeGithubHandler(IGitHubService gitHubService, IFirebaseService service)
+        public MergeGithubHandler(IGitHubService gitHubService, IFirebaseService service, IRepositoryMapper repoMapper)
         {
             this.gitHubService = gitHubService;
             this.service = service;
+            this.repoMapper = repoMapper;
         }
 
-        public async Task Handler(string type, int prNumber, string appId, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        public async Task Handler(string batonName, int prNumber, string appId, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            var batons = service.GetQueue().GetAwaiter().GetResult();
-            var batonFireObject = batons?.FirstOrDefault(x => x.Object.Name.Equals(type));
-
-            if (batonFireObject == null) return;
-
-            var queue = batonFireObject.Object.Queue;
+            var queue = await service.GetQueueForBaton(batonName);
 
             var name = turnContext.Activity.From.Name.Replace(" | Redington", "").Replace(" | Godel", "");
 
-            if (queue.Count <= 0) return;
+            if (queue?.Count <= 0) return;
 
             var batonPrRequest = queue.FirstOrDefault(x => x.UserName.Equals(name));
 
             if (batonPrRequest.PullRequestNumber > 0)
             {
-                var repo = string.Empty;
-
-                if (type == "be")
-                {
-                    repo = "maraschino";
-                }
-
-                if (type == "fe")
-                {
-                    repo = "ADA-Research-UI";
-                }
-
-                if (type == "man")
-                {
-                    repo = "ADA-Research-Configuration";
-                }
+                var repo = this.repoMapper.GetRepositoryNameFromBatonName(batonName);
 
                 if (!string.IsNullOrEmpty(repo))
                 {

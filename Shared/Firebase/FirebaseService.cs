@@ -64,7 +64,20 @@ namespace SharedBaton.Firebase
                 .PostAsync(queue);
         }
 
-        public async Task<IList<FirebaseObject<BatonQueue>>> GetQueue()
+        public async Task<Queue<BatonRequest>> GetQueueForBaton(string batonName)
+        {
+            var batons = await this.GetQueues();
+            var baton = batons.FirstOrDefault(x => x.Object.Name == batonName);
+            return baton?.Object.Queue;
+        }
+
+        public async Task<FirebaseObject<BatonQueue>> GetQueueFireObjectForBaton(string batonName)
+        {
+            var batons = await this.GetQueues();
+            return batons?.FirstOrDefault(x => x.Object.Name.Equals(batonName));
+        }
+
+        public async Task<IList<FirebaseObject<BatonQueue>>> GetQueues()
         {
             var auth = new FirebaseAuthProvider(new FirebaseConfig(firebaseApiKey));
             var token = await auth.SignInWithEmailAndPasswordAsync(firebaseLogin, firebasePassword);

@@ -5,47 +5,29 @@ namespace DevEnvironmentBot.Controllers
     using System.Threading.Tasks;
     using SharedBaton.GitHubService;
     using SharedBaton.Models;
+    using SharedBaton.RepositoryMapper;
 
     [Route("api/[controller]")]
     [ApiController]
     public class TestController : Controller
     {
-        private IGitHubService service;
+        private readonly IGitHubService service;
+        private readonly IRepositoryMapper mapper;
 
-        public TestController(IGitHubService service)
+        public TestController(IGitHubService service, IRepositoryMapper mapper)
         {
             this.service = service;
+            this.mapper = mapper;
         }
 
 
         [HttpGet("{baton}/{prNumber}")]
         public async Task<PullRequest> Get(string baton, int prNumber)
         {
-            var repo = getRepoName(baton);
+            var repo = this.mapper.GetRepositoryNameFromBatonName(baton);
             var test = this.service.GetPRInfo(repo, prNumber);
             return test;
         }
-
-        private string getRepoName(string type)
-        {
-            if (type == "be")
-            {
-                return "maraschino";
-            }
-
-            if (type == "fe")
-            {
-                return "ADA-Research-UI";
-            }
-
-            if (type == "man")
-            {
-                return "ADA-Research-Configuration";
-            }
-
-            return null;
-        }
-
 
         [HttpGet("Test")]
         public string GetConfig()

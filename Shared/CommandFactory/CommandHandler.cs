@@ -16,7 +16,6 @@ namespace SharedBaton.CommandFactory
 
         private readonly ITakeCommandHandler takeHandler;
         private readonly IReleaseCommandHandler releaseHandler;
-        private readonly IAdminReleaseCommandHandler adminReleaseHandler;
         private readonly IMoveMeCommandHandler moveMeHandler;
         private readonly IShowCommandHandler showHandler;
         private readonly IGithubUpdateHandler githubUpdateHandler;
@@ -25,17 +24,15 @@ namespace SharedBaton.CommandFactory
         private readonly ITryAgainCommandHandler tryAgainHandler;
         private readonly IToughDayCommandHandler toughDayCommandHandler;
         private readonly ITokenCommandHandler tokenHandler;
-        private readonly IConfiguration config;
 
         public CommandHandler(IFirebaseService client, ICardCreator cardCreator, IBatonService batonService,
-            ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IAdminReleaseCommandHandler adminReleaseCommandHandler, IShowCommandHandler showCommandHandler, IMoveMeCommandHandler moveMeCommandHandler, IGithubUpdateHandler githubUpdateHandler, IGithubMergeHandler githubMergeHandler,
-            ICloseTicketCommandHandler closeTicketHandler, ITryAgainCommandHandler tryAgainHandler, IToughDayCommandHandler toughDayCommandHandler, ITokenCommandHandler tokenHandler, IConfiguration config)
+            ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IShowCommandHandler showCommandHandler, IMoveMeCommandHandler moveMeCommandHandler, IGithubUpdateHandler githubUpdateHandler, IGithubMergeHandler githubMergeHandler,
+            ICloseTicketCommandHandler closeTicketHandler, ITryAgainCommandHandler tryAgainHandler, IToughDayCommandHandler toughDayCommandHandler, ITokenCommandHandler tokenHandler)
         {
             this.batons = batonService;
             this.takeHandler = takeCommandHandler;
             this.releaseHandler = releaseCommandHandler;
             this.showHandler = showCommandHandler;
-            this.adminReleaseHandler = adminReleaseCommandHandler;
             this.moveMeHandler = moveMeCommandHandler;
             this.githubUpdateHandler = githubUpdateHandler;
             this.githubMergeHandler = githubMergeHandler;
@@ -43,7 +40,6 @@ namespace SharedBaton.CommandFactory
             this.tryAgainHandler = tryAgainHandler;
             this.toughDayCommandHandler = toughDayCommandHandler;
             this.tokenHandler = tokenHandler;
-            this.config = config;
         }
 
         public async Task Handle(string text, string appId, ITurnContext<IMessageActivity> turnContext,
@@ -77,13 +73,16 @@ namespace SharedBaton.CommandFactory
                 await this.tokenHandler.SetHandler(comment, turnContext.Activity.From.Name, turnContext, cancellationToken);
                 return;
             }
+
             if (text.IndexOf(' ') == -1)
             {
                 var activity = MessageFactory.Text($"Sorry I don't quite understand that?");
                 _ = turnContext.SendActivityAsync(activity, cancellationToken);
+
                 return;
             }
 
+            //The rest of the batons all require baton name
             var command = text.Substring(0, text.IndexOf(' '));
             var type = text.Replace(command + " ", "");
             type = type.IndexOf(' ') > 0 ? type.Substring(0, type.IndexOf(' ')) : type;
@@ -106,15 +105,15 @@ namespace SharedBaton.CommandFactory
                     return;
                 }
 
-                await this.adminReleaseHandler.Handler(batonType.Shortname, name, appId, turnContext, cancellationToken);
+                await this.releaseHandler.AdminHandler(batonType.Shortname, name, turnContext, cancellationToken);
             }
             else if (command.Equals("moveme"))
             {
-                await this.moveMeHandler.Handler(batonType.Shortname, appId, turnContext, cancellationToken);
+                await this.moveMeHandler.Handler(batonType.Shortname, turnContext, cancellationToken);
             }
             else if (command.Equals("release"))
             {
-                await this.releaseHandler.Handler(batonType.Shortname, appId, turnContext, cancellationToken);
+                await this.releaseHandler.Handler(batonType.Shortname, turnContext, cancellationToken);
             }
             else if (command.Equals("tryagain"))
             {

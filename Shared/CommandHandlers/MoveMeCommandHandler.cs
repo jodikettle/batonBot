@@ -16,26 +16,29 @@ namespace SharedBaton.CommandHandlers
     public class MoveMeCommandHandler : IMoveMeCommandHandler
     {
         private readonly IFirebaseService service;
+        private readonly IWithinReleaseService withinRelease;
         private readonly string releaseMessageText;
+        private readonly string appId;
 
-        public MoveMeCommandHandler(IFirebaseService firebaseClient, IConfiguration config)
+        public MoveMeCommandHandler(IFirebaseService firebaseClient, IWithinReleaseService withinRelease, IConfiguration config)
         {
             this.service = firebaseClient;
             this.releaseMessageText = config["MoveMeBatonText"];
+            this.withinRelease = withinRelease;
+            this.appId = config["MicrosoftAppId"];
         }
 
-        public async Task Handler(string type, string appId, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        public async Task Handler(string batonName, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            var batons = service.GetQueue().GetAwaiter().GetResult();
-            var batonFireObject = batons?.FirstOrDefault(x => x.Object.Name.Equals(type));
+            var baton = await this.service.GetQueueFireObjectForBaton(batonName);
 
-            if (batonFireObject == null) return;
+            if (baton == null) return;
 
-            var queue = batonFireObject.Object.Queue;
+            var queue = baton.Object.Queue;
 
             var name = turnContext.Activity.From.Name.Replace(" | Redington", "").Replace(" | Godel", "");
 
-            if (queue.Count <= 0) return;
+            if (queue?.Count <= 0) return;
 
             // Does the first one belong to that person
             if (queue.First().UserName.Equals(name))
@@ -57,13 +60,11 @@ namespace SharedBaton.CommandHandlers
 
                     var list = queue.ToList();
                     list.Insert(1, first);
+                    baton.Object.Queue = new Queue<BatonRequest>(list);
 
-                    batonFireObject.Object.Queue = new Queue<BatonRequest>(list);
+                    await service.UpdateQueue(baton);
 
-
-                    await service.UpdateQueue(batonFireObject);
-
-                    var activity = MessageFactory.Text(this.releaseMessageText.Replace("{type}", type));
+                    var activity = MessageFactory.Text(this.releaseMessageText.Replace("{type}", batonName));
                     await turnContext.SendActivityAsync(activity, cancellationToken);
                 }
             }
@@ -79,13 +80,6 @@ namespace SharedBaton.CommandHandlers
             await turnContext.SendActivityAsync(reply, cancellationToken);
         }
 
-        private async Task BotCallback(string name, ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            // If you encounter permission-related errors when sending this message, see
-            // https://aka.ms/BotTrustServiceUrl
-            await turnContext.SendActivityAsync($"Hey! its your turn with the {name} baton");
-        }
-
         private async Task Notify(BatonRequest batonRequest, string appId, ITurnContext<IMessageActivity> turnContext)
         {
             if (batonRequest == null || string.IsNullOrEmpty(batonRequest.UserId))
@@ -96,8 +90,15 @@ namespace SharedBaton.CommandHandlers
             if (batonRequest.Conversation != null)
             {
                 await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(appId, batonRequest.Conversation, async (context, token) =>
-                    await BotCallback(batonRequest.BatonName, context, token), default(CancellationToken));
+                    await SendMessage(batonRequest.BatonName, context, token), default(CancellationToken));
+
+                await this.withinRelease.GotBaton(batonRequest, this.appId, true, turnContext, default(CancellationToken));
             }
+        }
+
+        private async Task SendMessage(string name, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            _ = await turnContext.SendActivityAsync($"Hey! its your turn with the {name} baton", cancellationToken: cancellationToken);
         }
     }
 }

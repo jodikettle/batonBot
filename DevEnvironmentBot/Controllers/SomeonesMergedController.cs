@@ -1,55 +1,48 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace DevEnvironmentBot.Controllers
+﻿namespace DevEnvironmentBot.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using DevEnvironmentBot.Cards;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Integration.AspNet.Core;
     using Microsoft.Bot.Schema;
     using Microsoft.Extensions.Configuration;
+    using SharedBaton.Card;
     using SharedBaton.Firebase;
+    using SharedBaton.RepositoryMapper;
 
     [Route("api/[controller]")]
     [ApiController]
     public class SomeonesMergedController : ControllerBase
     {
         private readonly IFirebaseService service;
-        private readonly IBotFrameworkHttpAdapter _adapter;
-        private readonly string _appId;
-        private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
-        private readonly int _timerCheckAllowance;
+        private readonly IRepositoryMapper repoMapper;
+        private readonly ICardCreator cardCreator;
+        private readonly IBotFrameworkHttpAdapter adapter;
+        private readonly string appId;
 
-        public SomeonesMergedController(IBotFrameworkHttpAdapter adapter, IConfiguration configuration, IFirebaseService firebaseClient, ConcurrentDictionary<string, ConversationReference> conversationReferences)
+        public SomeonesMergedController(IBotFrameworkHttpAdapter adapter, IConfiguration configuration, IFirebaseService firebaseClient, 
+            ICardCreator cardCreator, IRepositoryMapper repoMapper)
         {
-            _adapter = adapter;
-            _conversationReferences = conversationReferences;
-            _appId = configuration["MicrosoftAppId"];
-            _timerCheckAllowance = Int32.Parse(configuration["TimerCheckAllowance"]);
-
-            // If the channel is the Emulator, and authentication is not in use,
-            // the AppId will be null.  We generate a random AppId for this case only.
-            // This is not required for production, since the AppId will have a value.
-            if (string.IsNullOrEmpty(_appId))
-            {
-                _appId = Guid.NewGuid().ToString(); //if no AppId, use a random Guid
-            }
-
             this.service = firebaseClient;
+            this.adapter = adapter;
+            this.appId = configuration["MicrosoftAppId"];
+            this.cardCreator = cardCreator;
+            this.repoMapper = repoMapper;
+
+            if (string.IsNullOrEmpty(appId))
+            {
+                this.appId = Guid.NewGuid().ToString(); //if no AppId, use a random Guid
+            }
         }
 
         [HttpGet("{batonName}")]
         public async Task Get(string batonName)
         {
-            var batons = service.GetQueue().GetAwaiter().GetResult();
-
-            var baton = batons.FirstOrDefault(x => x.Object.Name == batonName);
-            var queue = baton?.Object.Queue;
+            var queue = await service.GetQueueForBaton(batonName);
 
             if (queue != null && queue.Count > 1)
             {
@@ -57,48 +50,27 @@ namespace DevEnvironmentBot.Controllers
 
                 if (batonHolder != null)
                 {
-                    var repoName = getRepoName(batonName);
+                    var repoName = this.repoMapper.GetRepositoryNameFromBatonName(batonName);
 
                     if (!string.IsNullOrEmpty(repoName))
                     {
-                        var attachments = new List<Attachment>();
-                        var reply = MessageFactory.Attachment(attachments);
+                        var reply = MessageFactory.Attachment(new List<Attachment>());
                         reply.Attachments.Add(
-                            Card.GetUpdateYourBranchCard(batonName, repoName, batonHolder.PullRequestNumber)
+                            this.cardCreator.GetUpdateYourBranchCard(batonName, repoName, batonHolder.PullRequestNumber)
                                 .ToAttachment());
 
-                        await ((BotAdapter)_adapter).ContinueConversationAsync(
-                            _appId,
+                        await ((BotAdapter)adapter).ContinueConversationAsync(
+                            appId,
                             batonHolder.Conversation,
                             async (context, token) =>
-                                await BotCallback(reply, context, token),
+                                await SendMessage(reply, context, token),
                             default(CancellationToken));
                     }
                 }
             }
         }
 
-        private string getRepoName(string type)
-        {
-            if (type == "be")
-            {
-                return  "maraschino";
-            }
-
-            if (type == "fe")
-            {
-                return "ADA-Research-UI";
-            }
-
-            if (type == "man")
-            {
-                return "ADA-Research-Configuration";
-            }
-
-            return null;
-        }
-
-        private async Task BotCallback(IMessageActivity message, ITurnContext turnContext, CancellationToken cancellationToken)
+        private async Task SendMessage(IMessageActivity message, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             // If you encounter permission-related errors when sending this message, see
             // https://aka.ms/BotTrustServiceUrl

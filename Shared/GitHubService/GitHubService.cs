@@ -67,20 +67,14 @@
             }
         }
 
-        public async Task<int> GetTicketId(string repo, int prNumber)
+        public int GetTicketId(string repo, int prNumber)
         {
-            if (string.IsNullOrEmpty(repo))
-            {
-                return 0;
-            }
-
-            if (prNumber < 1)
+            if (string.IsNullOrEmpty(repo) || prNumber < 1)
             {
                 return 0;
             }
 
             var pr = this.GetPRInfo(repo, prNumber);
-
             var resultString = Regex.Match(pr.head.reference, @"\d+").Value;
             int.TryParse(resultString, out int issueResult);
 

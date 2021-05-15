@@ -9,7 +9,6 @@
          Task<ServiceResult> MergePullRequest(string repo, int issueNumber);
          Task<bool> CloseTicket(string repo, int issueNumber);
          PullRequest GetPRInfo(string repo, int prNumber);
-
-         Task<int> GetTicketId(string repo, int prNumber);
+         int GetTicketId(string repo, int prNumber);
     }
 }

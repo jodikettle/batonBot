@@ -4,19 +4,24 @@
     using System.Threading;
     using SharedBaton.Interfaces;
     using System.Threading.Tasks;
-    using DevEnvironmentBot.Cards;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Schema;
+    using SharedBaton.Card;
     using SharedBaton.GitHubService;
     using SharedBaton.Models;
+    using SharedBaton.RepositoryMapper;
 
     public class WithinReleaseService : IWithinReleaseService
     {
-        public IGitHubService service;
+        private readonly IGitHubService service;
+        private readonly ICardCreator cardCreator;
+        private readonly IRepositoryMapper repoMapper;
 
-        public WithinReleaseService(IGitHubService service)
+        public WithinReleaseService(IGitHubService service, ICardCreator cardCreator, IRepositoryMapper repoMapper)
         {
             this.service = service;
+            this.cardCreator = cardCreator;
+            this.repoMapper = repoMapper;
         }
 
         public async Task GotBaton(BatonRequest baton, string appId, bool notify, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -26,7 +31,7 @@
                 return;
             }
 
-            var repoName = getRepo(baton.BatonName);
+            var repoName = this.repoMapper.GetRepositoryNameFromBatonName(baton.BatonName);
 
             if (string.IsNullOrEmpty(repoName))
             {
@@ -89,7 +94,7 @@
             {
                 var reply = MessageFactory.Attachment(new List<Attachment>());
                 reply.Attachments.Add(
-                    Card.GetUpdateYourBranchCardBeforeMerge(baton.BatonName, repoName, baton.PullRequestNumber)
+                    cardCreator.GetUpdateYourBranchCardBeforeMerge(baton.BatonName, repoName, baton.PullRequestNumber)
                         .ToAttachment());
 
                 if (notify)
@@ -108,7 +113,7 @@
             {
                 var reply = MessageFactory.Attachment(new List<Attachment>());
                 reply.Attachments.Add(
-                    Card.SquashAndMergeCard(baton.BatonName, repoName, baton.PullRequestNumber)
+                    cardCreator.SquashAndMergeCard(baton.BatonName, repoName, baton.PullRequestNumber)
                         .ToAttachment());
 
                 if (notify)
@@ -140,46 +145,22 @@
             }
         }
 
-        private string getRepo(string type)
-        {
-            var repo = string.Empty;
-
-            if (type == "be")
-            {
-                repo = "maraschino";
-            }
-
-            if (type == "fe")
-            {
-                repo = "ADA-Research-UI";
-            }
-
-            if (type == "man")
-            {
-                repo = "ADA-Research-Configuration";
-            }
-            return repo;
-        }
-
         private async Task SendMergeMessage(string message, ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            // If you encounter permission-related errors when sending this message, see
-            // https://aka.ms/BotTrustServiceUrl
-            await turnContext.SendActivityAsync(message);
+            _ = await turnContext.SendActivityAsync(message, cancellationToken: cancellationToken);
         }
 
         private async Task SendMergeMessage(IMessageActivity message, ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            // If you encounter permission-related errors when sending this message, see
-            // https://aka.ms/BotTrustServiceUrl
-            await turnContext.SendActivityAsync(message);
+            _ = await turnContext.SendActivityAsync(message, cancellationToken);
         }
 
+        //This can go after testing
         private async Task SendYourBatonMessage(string name, int PrNumber, string repoName, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             // If you encounter permission-related errors when sending this message, see
             // https://aka.ms/BotTrustServiceUrl
-            await turnContext.SendActivityAsync($"Hey! its your turn with the {name} baton for PR {PrNumber} going to {repoName}");
+            _ = await turnContext.SendActivityAsync($"Hey! its your turn with the {name} baton for PR {PrNumber} going to {repoName}", cancellationToken: cancellationToken);
         }
     }
 }
