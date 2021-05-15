@@ -3,7 +3,6 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.11.1
 
-using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -14,7 +13,6 @@ using DevEnvironmentBot.Bots;
 using SharedBaton.Firebase;
 using SharedBaton.Card;
 using DevEnvironmentBot.Cards;
-using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using SharedBaton.BatonServices;
 using SharedBaton.CommandHandlers;
@@ -23,6 +21,7 @@ using SharedBaton.Interfaces;
 
 namespace DevEnvironmentBot
 {
+    using Microsoft.Bot.Builder.Azure.Blobs;
     using SharedBaton.CommandFactory;
     using SharedBaton.GitHubService;
     using SharedBaton.WithinRelease;
@@ -43,21 +42,17 @@ namespace DevEnvironmentBot
 
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
-            //var storage1 = new BlobsStorage(storageString, "batonbotstorage");
 
-            var storage = new MemoryStorage();
+            var storageString = Configuration["StorageString"];
+            var storage = new BlobsStorage(storageString, "batonbotstorage");
+
             var userState = new UserState(storage);
             services.AddSingleton(userState);
-
-
-            // Create a global hashset for our ConversationReferences
-            services.AddSingleton<ConcurrentDictionary<string, ConversationReference>>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, DevBot>();
 
             services.AddSingleton<ICardCreator, Card>();
-
             services.AddSingleton<IFirebaseService, FirebaseService>(); 
             services.AddSingleton<IBatonService, BatonService>();
 

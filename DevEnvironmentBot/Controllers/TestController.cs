@@ -22,7 +22,7 @@ namespace DevEnvironmentBot.Controllers
         public async Task<PullRequest> Get(string baton, int prNumber)
         {
             var repo = getRepoName(baton);
-            var test =  await this.service.GetPRInfo(repo, prNumber);
+            var test = this.service.GetPRInfo(repo, prNumber);
             return test;
         }
 

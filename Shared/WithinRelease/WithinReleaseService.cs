@@ -33,7 +33,7 @@
                 return;
             }
 
-            var info = await this.service.GetPRInfo(repoName, baton.PullRequestNumber);
+            var info = this.service.GetPRInfo(repoName, baton.PullRequestNumber);
 
             if (notify)
             {

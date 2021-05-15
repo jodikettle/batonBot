@@ -35,7 +35,7 @@
                 return false;
             }
 
-            var pr = await this.GetPRInfo(repo, prNumber);
+            var pr = this.GetPRInfo(repo, prNumber);
 
             var resultString = Regex.Match(pr.head.reference, @"\d+").Value;
             int.TryParse(resultString, out int issueResult);
@@ -79,7 +79,7 @@
                 return 0;
             }
 
-            var pr = await this.GetPRInfo(repo, prNumber);
+            var pr = this.GetPRInfo(repo, prNumber);
 
             var resultString = Regex.Match(pr.head.reference, @"\d+").Value;
             int.TryParse(resultString, out int issueResult);
@@ -87,7 +87,7 @@
             return issueResult;
         }
 
-        public async Task<PullRequest> GetPRInfo(string repo, int prNumber)
+        public PullRequest GetPRInfo(string repo, int prNumber)
         {
             // GET / repos /{ owner}/{ repo}/ pulls /{ pull_number}
             var client = new RestClient($"https://api.github.com/repos/redington/{repo}/pulls/{prNumber}");
@@ -100,7 +100,7 @@
         public async Task<ServiceResult> MergePullRequest(string repo, int prNumber)
         {
             //Get Pull Request 
-            var pr = await this.GetPRInfo(repo, prNumber);
+            var pr = this.GetPRInfo(repo, prNumber);
 
             if (pr.mergeable_state != "blocked" && !pr.merged)
             {
@@ -152,7 +152,7 @@
 
         public async Task<ServiceResult> UpdatePullRequest(string repo, int prNumber)
         {
-            var pr = await this.GetPRInfo(repo, prNumber);
+            var pr = this.GetPRInfo(repo, prNumber);
 
             if (pr.mergeable_state != "behind")
             {
