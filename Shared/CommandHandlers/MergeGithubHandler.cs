@@ -43,17 +43,12 @@
 
                     if (result.Succeeded)
                     {
-                        var reply = MessageFactory.Text($"Thats been merged");
-                        _ = await turnContext.SendActivityAsync(reply, cancellationToken);
-                    }
-                    else if (result.ReasonForFailure == "No clue")
-                    {
-                        var reply = MessageFactory.Text($"Something went wrong no idea what");
+                        var reply = MessageFactory.Text($"That has been merged");
                         _ = await turnContext.SendActivityAsync(reply, cancellationToken);
                     }
                     else
                     {
-                        var reply = MessageFactory.Text($"Somethign went wrong - {result.ReasonForFailure}");
+                        var reply = MessageFactory.Text($"Something went wrong - {result.ReasonForFailure}");
                         _ = await turnContext.SendActivityAsync(reply, cancellationToken);
                     }
                 }

@@ -2,7 +2,6 @@
 namespace DevEnvironmentBot.Controllers
 {
     using System;
-    using System.Threading.Tasks;
     using SharedBaton.GitHubService;
     using SharedBaton.Models;
     using SharedBaton.RepositoryMapper;
@@ -22,7 +21,7 @@ namespace DevEnvironmentBot.Controllers
 
 
         [HttpGet("{baton}/{prNumber}")]
-        public async Task<PullRequest> Get(string baton, int prNumber)
+        public PullRequest Get(string baton, int prNumber)
         {
             var repo = this.mapper.GetRepositoryNameFromBatonName(baton);
             var test = this.service.GetPRInfo(repo, prNumber);

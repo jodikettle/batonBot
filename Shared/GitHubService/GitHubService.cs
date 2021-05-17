@@ -96,7 +96,7 @@
             //Get Pull Request 
             var pr = this.GetPRInfo(repo, prNumber);
 
-            if (pr.mergeable_state != "blocked" && !pr.merged)
+            if (pr.mergeable_state != "blocked" && !pr.merged && pr.GetMergeDescriptionString() != string.Empty)
             {
                 try
                 {
@@ -113,7 +113,7 @@
                             new
                             {
                                 commit_title = pr.title,
-                                commit_message = pr.GetMergeDecriptionString(),
+                                commit_message = pr.GetMergeDescriptionString(),
                                 merge_method = "squash",
                             });
 
@@ -140,7 +140,7 @@
             return new ServiceResult()
             {
                 Succeeded = false,
-                ReasonForFailure = "No clue"
+                ReasonForFailure = $"No clue - state : {pr.mergeable_state}, prMerged: {pr.merged}, desc: {pr.GetMergeDescriptionString()}"
             };
         }
 
@@ -158,28 +158,40 @@
                 };
             }
 
-            var result = await this.gitHubApiUrl
-                .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/update-branch")
-                .WithHeaders(
-                    new
-                    {
-                        Accept = "application/vnd.github.lydian-preview+json",
-                        Authorization = $"token {this.gitHubAccessToken}",
-                        User_Agent = "BatonBot"
-                    })
-                .PutAsync();
+            try
+            {
+                var result = await this.gitHubApiUrl
+                    .AppendPathSegment($"/repos/redington/{repo}/pulls/{prNumber}/update-branch")
+                    .WithHeaders(
+                        new
+                        {
+                            Accept = "application/vnd.github.lydian-preview+json",
+                            Authorization = $"token {this.gitHubAccessToken}",
+                            User_Agent = "BatonBot"
+                        })
+                    .PutAsync();
 
-            return result.StatusCode == 202
-                ? new ServiceResult()
-                {
-                    Succeeded = true
-                }
-                : new ServiceResult()
+                return result.StatusCode == 202
+                    ? new ServiceResult()
+                    {
+                        Succeeded = true
+                    }
+                    : new ServiceResult()
+                    {
+                        Succeeded = false,
+                        MergeStatus = pr.mergeable_state,
+                        ReasonForFailure = result.ResponseMessage.ToString()
+                    };
+            }
+            catch (Exception e)
+            {
+                return new ServiceResult()
                 {
                     Succeeded = false,
                     MergeStatus = pr.mergeable_state,
-                    ReasonForFailure = result.ResponseMessage.ToString()
+                    ReasonForFailure = e.Message
                 };
+            }
         }
     }
 }

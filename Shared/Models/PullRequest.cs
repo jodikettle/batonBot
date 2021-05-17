@@ -16,10 +16,11 @@
 
         public HeadInfo head;
 
-        public string GetMergeDecriptionString()
+        public string GetMergeDescriptionString()
         {
             var index = this.body.IndexOf("### Testing");
-            return this.body.Substring(0, index);
+
+            return index == -1 ? this.body.Substring(0, index) : string.Empty;
         }
     }
 
