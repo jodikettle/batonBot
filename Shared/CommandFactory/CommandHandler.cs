@@ -1,11 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using SharedBaton.Firebase;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using SharedBaton.Card;
 using SharedBaton.Commands;
 using SharedBaton.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace SharedBaton.CommandFactory
 {
@@ -22,10 +21,11 @@ namespace SharedBaton.CommandFactory
         private readonly ITryAgainCommandHandler tryAgainHandler;
         private readonly IToughDayCommandHandler toughDayCommandHandler;
         private readonly ITokenCommandHandler tokenHandler;
+        private readonly IConfiguration config;
 
-        public CommandHandler(IFirebaseService client, ICardCreator cardCreator, IBatonService batonService,
-            ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IShowCommandHandler showCommandHandler, IGithubUpdateHandler githubUpdateHandler, IGithubMergeHandler githubMergeHandler,
-            ICloseTicketCommandHandler closeTicketHandler, ITryAgainCommandHandler tryAgainHandler, IToughDayCommandHandler toughDayCommandHandler, ITokenCommandHandler tokenHandler)
+        public CommandHandler(IBatonService batonService, ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IShowCommandHandler showCommandHandler, 
+            IGithubUpdateHandler githubUpdateHandler, IGithubMergeHandler githubMergeHandler, ICloseTicketCommandHandler closeTicketHandler, 
+            ITryAgainCommandHandler tryAgainHandler, IToughDayCommandHandler toughDayCommandHandler, ITokenCommandHandler tokenHandler, IConfiguration config)
         {
             this.batons = batonService;
             this.takeHandler = takeCommandHandler;
@@ -37,6 +37,7 @@ namespace SharedBaton.CommandFactory
             this.tryAgainHandler = tryAgainHandler;
             this.toughDayCommandHandler = toughDayCommandHandler;
             this.tokenHandler = tokenHandler;
+            this.config = config;
         }
 
         public async Task Handle(string text, string appId, ITurnContext<IMessageActivity> turnContext,
@@ -91,7 +92,7 @@ namespace SharedBaton.CommandFactory
                 return;
             }
 
-            if (command.Equals("bananapancake"))
+            if (command.Equals(this.config["AdminReleasePassword"]))
             {
                 var name = text.Replace(command + " ", "").Replace(type, "").TrimStart();
 
