@@ -43,7 +43,6 @@ namespace SharedBaton.CommandFactory
         public async Task Handle(string text, string appId, ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
-            // Filter out mention 
             if (text.Contains("list"))
             {
                 var activity = MessageFactory.Text($"Batons are {this.batons.List()}");
