@@ -63,7 +63,6 @@ namespace DevEnvironmentBot
             services.AddSingleton<IShowCommandHandler, ShowCommandHandler>();
             services.AddSingleton<ITakeCommandHandler, TakeCommandHandler>();
             services.AddSingleton<IReleaseCommandHandler, ReleaseCommandHandler>();
-            services.AddSingleton<IMoveMeCommandHandler, MoveMeCommandHandler>();
             services.AddSingleton<IGithubUpdateHandler, UpdateGithubHandler>();
             services.AddSingleton<IGithubMergeHandler, MergeGithubHandler>();
             services.AddSingleton<IWithinReleaseService, WithinReleaseService>();

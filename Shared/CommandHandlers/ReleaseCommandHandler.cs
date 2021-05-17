@@ -84,6 +84,52 @@ namespace SharedBaton.CommandHandlers
             }
         }
 
+        public async Task MoveMeHandler(string batonName, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            var baton = await this.service.GetQueueFireObjectForBaton(batonName);
+
+            if (baton == null) return;
+
+            var queue = baton.Object.Queue;
+
+            var name = turnContext.Activity.From.Name.Replace(" | Redington", "").Replace(" | Godel", "");
+
+            if (queue?.Count <= 0) return;
+
+            // Does the first one belong to that person
+            if (queue.First().UserName.Equals(name))
+            {
+                if (queue.Count == 1)
+                {
+                    await turnContext.SendActivityAsync($"There's no one else in the Queue");
+                }
+                else
+                {
+                    var first = queue.Dequeue();
+                    first.Comment = first.Comment + $" {first.UserName} moved down once";
+                    first.DateReceived = null;
+                    first.MoveMeCount += 1;
+
+                    //Tell the other person
+                    await this.Notify(queue.FirstOrDefault(), turnContext);
+                    queue.FirstOrDefault().DateReceived = DateTime.Now;
+
+                    var list = queue.ToList();
+                    list.Insert(1, first);
+                    baton.Object.Queue = new Queue<BatonRequest>(list);
+
+                    await service.UpdateQueue(baton);
+
+                    var activity = MessageFactory.Text("You have been moved");
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+                }
+            }
+            else
+            {
+                await this.SendNotYourBatonRightNow(turnContext, cancellationToken);
+            }
+        }
+
         private async Task RemoveFromQueueAndInformTheOtherPerson(string type, ITurnContext<IMessageActivity> turnContext, global::Firebase.Database.FirebaseObject<BatonQueue> baton, Queue<BatonRequest> queue, string name, CancellationToken cancellationToken)
         {
             var oldBatonRequest = queue.Dequeue();
@@ -161,6 +207,12 @@ namespace SharedBaton.CommandHandlers
             // If you encounter permission-related errors when sending this message, see
             // https://aka.ms/BotTrustServiceUrl
             await turnContext.SendActivityAsync($"Hey! its your turn with the {name} baton");
+        }
+
+        private async Task SendNotYourBatonRightNow(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            var reply = MessageFactory.Text($"Its not your turn");
+            await turnContext.SendActivityAsync(reply, cancellationToken);
         }
 
         private async Task SendNotYourBaton(ITurnContext turnContext, CancellationToken cancellationToken)

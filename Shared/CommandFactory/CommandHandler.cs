@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using SharedBaton.Firebase;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using SharedBaton.Card;
 using SharedBaton.Commands;
 using SharedBaton.Interfaces;
@@ -16,7 +15,6 @@ namespace SharedBaton.CommandFactory
 
         private readonly ITakeCommandHandler takeHandler;
         private readonly IReleaseCommandHandler releaseHandler;
-        private readonly IMoveMeCommandHandler moveMeHandler;
         private readonly IShowCommandHandler showHandler;
         private readonly IGithubUpdateHandler githubUpdateHandler;
         private readonly IGithubMergeHandler githubMergeHandler;
@@ -26,14 +24,13 @@ namespace SharedBaton.CommandFactory
         private readonly ITokenCommandHandler tokenHandler;
 
         public CommandHandler(IFirebaseService client, ICardCreator cardCreator, IBatonService batonService,
-            ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IShowCommandHandler showCommandHandler, IMoveMeCommandHandler moveMeCommandHandler, IGithubUpdateHandler githubUpdateHandler, IGithubMergeHandler githubMergeHandler,
+            ITakeCommandHandler takeCommandHandler, IReleaseCommandHandler releaseCommandHandler, IShowCommandHandler showCommandHandler, IGithubUpdateHandler githubUpdateHandler, IGithubMergeHandler githubMergeHandler,
             ICloseTicketCommandHandler closeTicketHandler, ITryAgainCommandHandler tryAgainHandler, IToughDayCommandHandler toughDayCommandHandler, ITokenCommandHandler tokenHandler)
         {
             this.batons = batonService;
             this.takeHandler = takeCommandHandler;
             this.releaseHandler = releaseCommandHandler;
             this.showHandler = showCommandHandler;
-            this.moveMeHandler = moveMeCommandHandler;
             this.githubUpdateHandler = githubUpdateHandler;
             this.githubMergeHandler = githubMergeHandler;
             this.closeTicketHandler = closeTicketHandler;
@@ -109,7 +106,7 @@ namespace SharedBaton.CommandFactory
             }
             else if (command.Equals("moveme"))
             {
-                await this.moveMeHandler.Handler(batonType.Shortname, turnContext, cancellationToken);
+                await this.releaseHandler.MoveMeHandler(batonType.Shortname, turnContext, cancellationToken);
             }
             else if (command.Equals("release"))
             {
