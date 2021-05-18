@@ -88,14 +88,22 @@
 
         public PullRequest GetPRInfo(string repo, int prNumber)
         {
-            // GET / repos /{ owner}/{ repo}/ pulls /{ pull_number}
-            var client = new RestClient($"https://api.github.com/repos/redington/{repo}/pulls/{prNumber}");
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("authorization", $"token {gitHubAccessToken}");
-            var response = client.Execute(request);
+            try
+            {
+                // GET / repos /{ owner}/{ repo}/ pulls /{ pull_number}
+                var client = new RestClient($"https://api.github.com/repos/redington/{repo}/pulls/{prNumber}");
+                var request = new RestRequest(Method.GET);
+                request.AddHeader("authorization", $"token {gitHubAccessToken}");
+                var response = client.Execute(request);
 
-            return response.StatusCode == HttpStatusCode.OK ? JsonConvert.DeserializeObject<PullRequest>(response.Content) : null;
+                return response.StatusCode == HttpStatusCode.OK ? JsonConvert.DeserializeObject<PullRequest>(response.Content) : null;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
+
         public async Task<ServiceResult> MergePullRequest(string repo, int prNumber)
         {
             //Get Pull Request 
