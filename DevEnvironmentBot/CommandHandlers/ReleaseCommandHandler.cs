@@ -175,6 +175,9 @@ namespace BatonBot.CommandHandlers
             {
                 var activity1 = MessageFactory.Text("Error - Go Tell Jodi - " + e.Message);
                 await turnContext.SendActivityAsync(activity1, cancellationToken);
+
+                var activity2 = MessageFactory.Text(e.StackTrace);
+                await turnContext.SendActivityAsync(activity2, cancellationToken);
             }
         }
 
