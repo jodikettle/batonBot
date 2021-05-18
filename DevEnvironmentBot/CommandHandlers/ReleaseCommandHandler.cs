@@ -133,36 +133,49 @@ namespace BatonBot.CommandHandlers
 
         private async Task RemoveFromQueueAndInformTheOtherPerson(string type, ITurnContext<IMessageActivity> turnContext, global::Firebase.Database.FirebaseObject<BatonQueue> baton, Queue<BatonRequest> queue, string name, CancellationToken cancellationToken)
         {
-            var oldBatonRequest = queue.Dequeue();
-
-            if (oldBatonRequest.PullRequestNumber > 0)
+            try
             {
-                var reply = MessageFactory.Attachment(new List<Attachment>());
-                reply.Attachments.Add(
-                    this.cardCreator.DoYouWantToCloseTheTicket(
-                            type, this.mapper.GetRepositoryNameFromBatonName(type), oldBatonRequest.PullRequestNumber, githubService)
-                        .ToAttachment());
+                var oldBatonRequest = queue.Dequeue();
 
-                await turnContext.SendActivityAsync(reply, cancellationToken);
+                if (oldBatonRequest.PullRequestNumber > 0)
+                {
+                    var activity = MessageFactory.Text(this.releaseMessageText.Replace("{type}", type));
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+
+                    var reply = MessageFactory.Attachment(new List<Attachment>());
+                    reply.Attachments.Add(
+                        this.cardCreator.DoYouWantToCloseTheTicket(
+                                type, this.mapper.GetRepositoryNameFromBatonName(type), oldBatonRequest.PullRequestNumber,
+                                this.githubService)
+                            .ToAttachment());
+
+                    await turnContext.SendActivityAsync(reply, cancellationToken);
+                }
+                else
+                {
+                    var activity = MessageFactory.Text(this.releaseMessageText.Replace("{type}", type));
+                    await turnContext.SendActivityAsync(activity, cancellationToken);
+                }
+
+                if (queue.Count > 0)
+                {
+                    //Tell the other person
+                    await this.Notify(queue.FirstOrDefault(), turnContext);
+                    queue.FirstOrDefault().DateReceived = DateTime.Now;
+                }
+
+                await service.UpdateQueue(baton);
+
+                this.logger.Log(
+                    config["AppDisplayName"],
+                    type, name, oldBatonRequest.DateRequested, oldBatonRequest.DateReceived, DateTime.Now,
+                    oldBatonRequest.MoveMeCount, false);
             }
-            else
+            catch (Exception e)
             {
-                var activity = MessageFactory.Text(this.releaseMessageText.Replace("{type}", type));
-                await turnContext.SendActivityAsync(activity, cancellationToken);
+                var activity1 = MessageFactory.Text("Error - Go Tell Jodi - " + e.Message);
+                await turnContext.SendActivityAsync(activity1, cancellationToken);
             }
-
-            if (queue.Count > 0)
-            {
-                //Tell the other person
-                await this.Notify(queue.FirstOrDefault(), turnContext);
-                queue.FirstOrDefault().DateReceived = DateTime.Now;
-            }
-
-            await service.UpdateQueue(baton);
-
-            this.logger.Log(config["AppDisplayName"],
-                type, name, oldBatonRequest.DateRequested, oldBatonRequest.DateReceived, DateTime.Now,
-                oldBatonRequest.MoveMeCount, false);
         }
 
         private async Task RemoveFurtherDownTheList(ITurnContext<IMessageActivity> turnContext, FirebaseObject<BatonQueue> baton, Queue<BatonRequest> queue, string name, CancellationToken cancellationToken)
