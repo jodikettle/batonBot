@@ -1,5 +1,6 @@
 ﻿namespace BatonBot.CommandHandlers
 {
+    using System;
     using System.Linq;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Schema;
@@ -38,24 +39,36 @@
 
                 if (!string.IsNullOrEmpty(repo))
                 {
-                    var result = await this.gitHubService.UpdatePullRequest(repo, batonPrRequest.PullRequestNumber);
+                    try
+                    {
+                        var result = await this.gitHubService.UpdatePullRequest(repo, batonPrRequest.PullRequestNumber);
 
-                    if (result.Succeeded)
-                    {
-                        var reply = MessageFactory.Text($"Im Updating that for you");
-                        _ = await turnContext.SendActivityAsync(reply, cancellationToken);
+                        if (result.Succeeded)
+                        {
+                            var reply = MessageFactory.Text($"Im Updating that for you");
+                            _ = await turnContext.SendActivityAsync(reply, cancellationToken);
+                        }
+                        else if (result.ReasonForFailure == "Not Needed")
+                        {
+                            var reply = MessageFactory.Text(
+                                $"Its not required to update this branch at this time. {result.MergeStatus}");
+                            _ = await turnContext.SendActivityAsync(reply, cancellationToken);
+                        }
+                        else
+                        {
+                            var reply = MessageFactory.Text($"That didn't work out can you update it on the link");
+                            _ = await turnContext.SendActivityAsync(reply, cancellationToken);
+
+                            var reply1 = MessageFactory.Text($"{result.MergeStatus} - {result.ReasonForFailure}");
+                            _ = await turnContext.SendActivityAsync(reply1, cancellationToken);
+                        }
                     }
-                    else if (result.ReasonForFailure == "Not Needed")
-                    {
-                        var reply = MessageFactory.Text($"Its not required to update this branch at this time. {result.MergeStatus}");
-                        _ = await turnContext.SendActivityAsync(reply, cancellationToken);
-                    }
-                    else
+                    catch (Exception e)
                     {
                         var reply = MessageFactory.Text($"That didn't work out can you update it on the link");
                         _ = await turnContext.SendActivityAsync(reply, cancellationToken);
 
-                        var reply1 = MessageFactory.Text($"{result.MergeStatus} - {result.ReasonForFailure}");
+                        var reply1 = MessageFactory.Text($"{e.Message}");
                         _ = await turnContext.SendActivityAsync(reply1, cancellationToken);
                     }
                 }
