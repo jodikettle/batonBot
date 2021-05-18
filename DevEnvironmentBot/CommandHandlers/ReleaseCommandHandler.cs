@@ -142,12 +142,11 @@ namespace BatonBot.CommandHandlers
                     var activity = MessageFactory.Text(this.releaseMessageText.Replace("{type}", type));
                     await turnContext.SendActivityAsync(activity, cancellationToken);
 
+                    var repo = this.mapper.GetRepositoryNameFromBatonName(type);
+                    var card = this.cardCreator.DoYouWantToCloseTheTicket(type, repo, oldBatonRequest.PullRequestNumber, this.githubService);
+
                     var reply = MessageFactory.Attachment(new List<Attachment>());
-                    reply.Attachments.Add(
-                        this.cardCreator.DoYouWantToCloseTheTicket(
-                                type, this.mapper.GetRepositoryNameFromBatonName(type), oldBatonRequest.PullRequestNumber,
-                                this.githubService)
-                            .ToAttachment());
+                    reply.Attachments.Add(card.ToAttachment());
 
                     await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
