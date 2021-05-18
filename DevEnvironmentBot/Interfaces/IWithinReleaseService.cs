@@ -9,6 +9,6 @@ namespace BatonBot.Interfaces
 
     public interface IWithinReleaseService
     {
-        Task GotBaton(BatonRequest baton, string appId, bool notify, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken);
+        Task<bool> GotBaton(BatonRequest baton, string appId, bool notify, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken);
     }
 }

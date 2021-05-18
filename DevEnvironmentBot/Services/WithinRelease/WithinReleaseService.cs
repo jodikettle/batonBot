@@ -25,18 +25,18 @@
             this.repoMapper = repoMapper;
         }
 
-        public async Task GotBaton(BatonRequest baton, string appId, bool notify, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        public async Task<bool> GotBaton(BatonRequest baton, string appId, bool notify, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             if (baton.PullRequestNumber == 0)
             {
-                return;
+                return false;
             }
 
             var repoName = this.repoMapper.GetRepositoryNameFromBatonName(baton.BatonName);
 
             if (string.IsNullOrEmpty(repoName))
             {
-                return;
+                return false;
             }
 
             var info = this.service.GetPRInfo(repoName, baton.PullRequestNumber);
@@ -151,6 +151,8 @@
                     _ = await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
             }
+
+            return true;
         }
 
         private async Task SendMergeMessage(string message, ITurnContext turnContext, CancellationToken cancellationToken)

@@ -18,6 +18,7 @@ namespace BatonBot.CommandHandlers
     using BatonBot.Services.Card;
     using BatonBot.Services.RepositoryMapper;
     using global::Firebase.Database;
+    using Newtonsoft.Json;
 
     public class ReleaseCommandHandler : IReleaseCommandHandler
     {
@@ -186,20 +187,30 @@ namespace BatonBot.CommandHandlers
             return new Queue<BatonRequest>(batonQueue.Where(x => !x.UserName.Equals(username)));
         }
 
-        private async Task Notify(BatonRequest batonRequest, ITurnContext<IMessageActivity> turnContext)
+        private async Task<bool> Notify(BatonRequest batonRequest, ITurnContext<IMessageActivity> turnContext)
         {
-            if (batonRequest == null || string.IsNullOrEmpty(batonRequest.UserId))
+            if (batonRequest == null || string.IsNullOrEmpty(batonRequest.UserId) || batonRequest.Conversation == null)
             {
-                return;
+                return false;
             }
 
-            if (batonRequest.Conversation != null)
-            {
-                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(this.appId, batonRequest.Conversation, async (context, token) =>
-                    await SendYourBatonMessage(batonRequest.BatonName, context, token), default(CancellationToken));
+            await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(this.appId, batonRequest.Conversation, async (context, token) =>
+                await this.SendYourBatonMessage(batonRequest.BatonName, context, token), default(CancellationToken));
 
-                await this.releaseService.GotBaton(batonRequest, this.appId, true, turnContext, default(CancellationToken));
+            if (batonRequest.PullRequestNumber > 0)
+            {
+                var repo = this.mapper.GetRepositoryNameFromBatonName(batonRequest.BatonName);
+                var info = this.githubService.GetPRInfo(repo, batonRequest.PullRequestNumber);
+
+                var reply = MessageFactory.Text(JsonConvert.SerializeObject(info));
+
+                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(this.appId, batonRequest.Conversation, 
+                    async (context, token) =>
+                        await turnContext.SendActivityAsync(reply, default(CancellationToken)), default(CancellationToken));
             }
+
+            var test = await this.releaseService.GotBaton(batonRequest, this.appId, true, turnContext, default(CancellationToken));
+            return true;
         }
 
         private async Task SendYourBatonMessage(string name, ITurnContext turnContext, CancellationToken cancellationToken)

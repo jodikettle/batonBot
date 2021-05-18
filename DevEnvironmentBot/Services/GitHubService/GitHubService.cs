@@ -87,7 +87,7 @@
             var client = new RestClient($"https://api.github.com/repos/redington/{repo}/pulls/{prNumber}");
             var request = new RestRequest(Method.GET);
             request.AddHeader("authorization", $"token {gitHubAccessToken}");
-            IRestResponse response = client.Execute(request);
+            var response = client.Execute(request);
 
             return response.StatusCode == HttpStatusCode.OK ? JsonConvert.DeserializeObject<PullRequest>(response.Content) : null;
         }
