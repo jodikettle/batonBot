@@ -145,10 +145,13 @@ namespace BatonBot.CommandHandlers
                     var repo = this.mapper.GetRepositoryNameFromBatonName(type);
                     var card = this.cardCreator.DoYouWantToCloseTheTicket(type, repo, oldBatonRequest.PullRequestNumber, this.githubService);
 
-                    var reply = MessageFactory.Attachment(new List<Attachment>());
-                    reply.Attachments.Add(card.ToAttachment());
+                    if (card != null)
+                    {
+                        var reply = MessageFactory.Attachment(new List<Attachment>());
+                        reply.Attachments.Add(card.ToAttachment());
 
-                    await turnContext.SendActivityAsync(reply, cancellationToken);
+                        await turnContext.SendActivityAsync(reply, cancellationToken);
+                    }
                 }
                 else
                 {
