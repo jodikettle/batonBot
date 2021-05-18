@@ -20,7 +20,7 @@
         {
             var index = this.body.IndexOf("### Testing");
 
-            return index == -1 ? this.body.Substring(0, index) : string.Empty;
+            return index != -1 ? this.body.Substring(0, index) : string.Empty;
         }
     }
 
