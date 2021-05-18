@@ -40,7 +40,7 @@ namespace BatonBot.CommandHandlers
             {
                 var baton = new BatonQueue(type);
 
-                baton.Queue.Enqueue(new BatonRequest()
+                var batonRequest = new BatonRequest()
                 {
                     UserName = name,
                     UserId = conversationReference.User.Id,
@@ -50,11 +50,14 @@ namespace BatonBot.CommandHandlers
                     BatonName = type,
                     Comment = comment,
                     PullRequestNumber = pullRequest
-                });
+                };
+
+                baton.Queue.Enqueue(batonRequest);
 
                 service.SaveQueue(baton);
 
                 SendItsAllYours(turnContext, cancellationToken);
+                await this.releaseService.GotBaton(batonRequest, string.Empty, false, turnContext, cancellationToken);
             }
             else
             {

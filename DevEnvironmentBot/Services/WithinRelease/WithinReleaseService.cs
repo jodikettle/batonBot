@@ -41,6 +41,26 @@
 
             var info = this.service.GetPRInfo(repoName, baton.PullRequestNumber);
 
+            if (info == null)
+            {
+                if (notify)
+                {
+                    var reply1 = MessageFactory.Text("I cant find that pull request you going to have to do this on your own");
+
+                    await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+                        appId, baton.Conversation, async (context, token) =>
+                            await SendMergeMessage(reply1, context, token),
+                        default(CancellationToken));
+                }
+                else
+                {
+                    var reply1 = MessageFactory.Text("I cant find that pull request you going to have to do this on your own");
+                    await turnContext.SendActivityAsync(reply1, cancellationToken);
+                }
+
+                return false;
+            }
+
             if (notify)
             {
                 var reply2 = MessageFactory.Text(JsonConvert.SerializeObject(info));

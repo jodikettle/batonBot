@@ -75,10 +75,15 @@
             }
 
             var pr = this.GetPRInfo(repo, prNumber);
-            var resultString = Regex.Match(pr.head.reference, @"\d+").Value;
-            int.TryParse(resultString, out int issueResult);
 
-            return issueResult;
+            if (pr != null)
+            {
+                var resultString = Regex.Match(pr.head.reference, @"\d+").Value;
+                int.TryParse(resultString, out int issueResult);
+                return issueResult;
+            }
+
+            return 0;
         }
 
         public PullRequest GetPRInfo(string repo, int prNumber)
