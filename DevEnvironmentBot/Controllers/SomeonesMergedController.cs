@@ -1,4 +1,4 @@
-﻿namespace DevEnvironmentBot.Controllers
+﻿namespace BatonBot.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
     using System;
@@ -6,13 +6,13 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using BatonBot.Firebase;
+    using BatonBot.Services.Card;
+    using BatonBot.Services.RepositoryMapper;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Integration.AspNet.Core;
     using Microsoft.Bot.Schema;
     using Microsoft.Extensions.Configuration;
-    using SharedBaton.Card;
-    using SharedBaton.Firebase;
-    using SharedBaton.RepositoryMapper;
 
     [Route("api/[controller]")]
     [ApiController]

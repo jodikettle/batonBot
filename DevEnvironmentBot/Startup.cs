@@ -9,22 +9,23 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using DevEnvironmentBot.Bots;
-using SharedBaton.Firebase;
-using SharedBaton.Card;
+using BatonBot.Bots;
+using BatonBot.Firebase;
 using Microsoft.Extensions.Configuration;
-using SharedBaton.BatonServices;
+using BatonBot.BatonServices;
 using SharedBaton.CommandHandlers;
-using SharedBaton.Commands;
-using SharedBaton.Interfaces;
+using BatonBot.Commands;
 
 namespace DevEnvironmentBot
 {
     using Microsoft.Bot.Builder.Azure.Blobs;
-    using SharedBaton.CommandFactory;
-    using SharedBaton.GitHubService;
-    using SharedBaton.RepositoryMapper;
-    using SharedBaton.WithinRelease;
+    using BatonBot.CommandFactory;
+    using BatonBot.GitHubService;
+    using BatonBot.Services.RepositoryMapper;
+    using BatonBot.Services.WithinRelease;
+    using BatonBot.CommandHandlers;
+    using BatonBot.Interfaces;
+    using BatonBot.Services.Card;
 
     public class Startup
     {

@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using SharedBaton.Firebase;
 
-namespace DevEnvironmentBot.Controllers
+namespace BatonBot.Controllers
 {
+    using BatonBot.Firebase;
+
     [Route("api/[controller]")]
     [ApiController]
     public class TimerCheckController : ControllerBase

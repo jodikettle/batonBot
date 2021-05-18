@@ -8,9 +8,9 @@ using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
-using SharedBaton.Interfaces;
+using BatonBot.Interfaces;
 
-namespace DevEnvironmentBot.Bots
+namespace BatonBot.Bots
 {
     public class DevBot : TeamsActivityHandler
     {

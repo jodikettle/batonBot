@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-namespace DevEnvironmentBot.Controllers
+namespace BatonBot.Controllers
 {
     using System;
-    using SharedBaton.GitHubService;
-    using SharedBaton.Models;
-    using SharedBaton.RepositoryMapper;
+    using BatonBot.GitHubService;
+    using BatonBot.Models;
+    using BatonBot.Services.RepositoryMapper;
 
     [Route("api/[controller]")]
     [ApiController]

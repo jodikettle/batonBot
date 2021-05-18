@@ -1,0 +1,39 @@
+﻿namespace BatonBot.CommandHandlers
+{
+    using System.Threading;
+    using System.Threading.Tasks;
+    using BatonBot.GitHubService;
+    using BatonBot.Interfaces;
+    using BatonBot.Services.RepositoryMapper;
+    using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Schema;
+
+    public class CloseTicketCommandHandler : ICloseTicketCommandHandler
+    {
+        private readonly IGitHubService service;
+        private readonly IRepositoryMapper mapper;
+
+        public CloseTicketCommandHandler(IGitHubService service, IRepositoryMapper mapper)
+        {
+            this.service = service;
+            this.mapper = mapper;
+        }
+
+        public async Task Handler(string batonName, int prNumber, string appId, ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            var repo = mapper.GetRepositoryNameFromBatonName(batonName);
+            var result = await this.service.CloseTicket(repo, prNumber);
+
+            if (result)
+            {
+                var reply = MessageFactory.Text($"All done");
+                await turnContext.SendActivityAsync(reply, cancellationToken);
+            }
+            else
+            {
+                var reply = MessageFactory.Text($"Sorry something went wrong - can you do it manually ");
+                await turnContext.SendActivityAsync(reply, cancellationToken);
+            }
+        }
+    }
+}
