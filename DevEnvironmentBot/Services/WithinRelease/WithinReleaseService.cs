@@ -61,32 +61,32 @@
                 return false;
             }
 
-            if (notify)
-            {
-                var reply2 = MessageFactory.Text(JsonConvert.SerializeObject(info));
+            //if (notify)
+            //{
+            //    var reply2 = MessageFactory.Text(JsonConvert.SerializeObject(info));
 
-                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
-                    appId, baton.Conversation, async (context, token) =>
-                        await SendMergeMessage(reply2, context, token),
-                    default(CancellationToken));
+            //    await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+            //        appId, baton.Conversation, async (context, token) =>
+            //            await SendMergeMessage(reply2, context, token),
+            //        default(CancellationToken));
 
-                var reply1 = MessageFactory.Text("MergeState:"+ info.mergeable_state);
+            //    var reply1 = MessageFactory.Text("MergeState:"+ info.mergeable_state);
 
-                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
-                    appId, baton.Conversation, async (context, token) =>
-                        await SendMergeMessage(reply1, context, token),
-                    default(CancellationToken));
+            //    await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+            //        appId, baton.Conversation, async (context, token) =>
+            //            await SendMergeMessage(reply1, context, token),
+            //        default(CancellationToken));
 
-                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
-                    appId, baton.Conversation, async (context, token) =>
-                        await SendYourBatonMessage(baton.BatonName, baton.PullRequestNumber, repoName, context, token),
-                    default(CancellationToken));
-            }
-            else
-            {
-                var reply1 = MessageFactory.Text("merge status:" + info.mergeable_state);
-                await turnContext.SendActivityAsync(reply1, cancellationToken);
-            }
+            //    await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+            //        appId, baton.Conversation, async (context, token) =>
+            //            await SendYourBatonMessage(baton.BatonName, baton.PullRequestNumber, repoName, context, token),
+            //        default(CancellationToken));
+            //}
+            //else
+            //{
+            //    var reply1 = MessageFactory.Text("merge status:" + info.mergeable_state);
+            //    await turnContext.SendActivityAsync(reply1, cancellationToken);
+            //}
 
             if (info.mergeable_state == "dirty")
             {
@@ -109,12 +109,12 @@
                 {
                     await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
                         appId, baton.Conversation, async (context, token) =>
-                            await this.SendMergeMessage($"### Its not ready to go. Do you have enough reviews?", context, token),
+                            await this.SendMergeMessage($"### Its not ready to go. Do you have enough reviews? Have any of the tests failed?", context, token),
                         default(CancellationToken));
                 }
                 else
                 {
-                    var reply = MessageFactory.Text($"### Its not ready to go. Do you have enough reviews?");
+                    var reply = MessageFactory.Text($"### Its not ready to go. Do you have enough reviews? Have any of the tests failed?");
                     _ = await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
             }
@@ -154,6 +154,21 @@
                 else
                 {
                     await turnContext.SendActivityAsync(reply, cancellationToken);
+                }
+            }
+            else if (info.mergeable_state == "unknown")
+            {
+                if (notify)
+                {
+                    await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(
+                        appId, baton.Conversation, async (context, token) =>
+                            await this.SendMergeMessage($"The status is unknown can you run \"tryagain {baton.BatonName}\"", context, token),
+                        default(CancellationToken));
+                }
+                else
+                {
+                    var reply = MessageFactory.Text($"The status is unknown can you run \"tryagain {baton.BatonName}\"");
+                    _ = await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
             }
             else

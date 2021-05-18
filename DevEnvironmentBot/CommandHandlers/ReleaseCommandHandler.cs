@@ -215,18 +215,6 @@ namespace BatonBot.CommandHandlers
             await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(this.appId, batonRequest.Conversation, async (context, token) =>
                 await this.SendYourBatonMessage(batonRequest.BatonName, context, token), default(CancellationToken));
 
-            if (batonRequest.PullRequestNumber > 0)
-            {
-                var repo = this.mapper.GetRepositoryNameFromBatonName(batonRequest.BatonName);
-                var info = this.githubService.GetPRInfo(repo, batonRequest.PullRequestNumber);
-
-                var reply = MessageFactory.Text(JsonConvert.SerializeObject(info));
-
-                await ((BotAdapter)turnContext.Adapter).ContinueConversationAsync(this.appId, batonRequest.Conversation, 
-                    async (context, token) =>
-                        await turnContext.SendActivityAsync(reply, default(CancellationToken)), default(CancellationToken));
-            }
-
             var test = await this.releaseService.GotBaton(batonRequest, this.appId, true, turnContext, default(CancellationToken));
             return true;
         }
